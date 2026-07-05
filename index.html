@@ -117,9 +117,7 @@
 
   /* Pricing */
   .pricing{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
-  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:8px;}
-  @media(max-width:920px){.price-grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:520px){.price-grid{grid-template-columns:1fr}}
+  .price-grid{display:grid;grid-template-columns:minmax(0,360px);justify-content:center;gap:20px;margin-top:8px;}
   .plan{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);padding:32px 26px 28px;transition:transform .3s,box-shadow .3s,border-color .3s;}
   .plan.feature{border-color:var(--gold);}
   .plan.feature::before{content:"Recommended";position:absolute;top:-1px;right:-1px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:.82rem;letter-spacing:.03em;color:var(--paper);background:var(--gold-deep);padding:4px 14px;}
@@ -303,41 +301,17 @@
     <div class="sec-head reveal">
       <p class="eyebrow">Monthly Subscription</p>
       <h2>月額サブスクリプション</h2>
-      <p class="note">個人のお客様向けに、AIを活用した各種ツールを月額サブスクリプション形式でご提供しています。ご利用範囲・サポート内容に応じて4つのプランからお選びいただけます。あわせて、デジタルコンテンツの販売も行っています。</p>
+      <p class="note">個人のお客様向けに、AIを活用した各種ツールを月額サブスクリプション形式でご提供しています。あわせて、デジタルコンテンツの販売も行っています。</p>
     </div>
 
     <div class="price-grid">
-      <div class="plan feature reveal">
+      <div class="plan reveal">
         <div class="pname">Plan A</div>
         <div class="psub">Full</div>
         <div class="amt"><span class="yen">¥</span>7,500</div>
         <div class="per">／ 月（税込）</div>
-        <p class="pdesc">AIサンタのツールを幅広くフルにご活用いただける、いちばん充実したプランです。</p>
+        <p class="pdesc">AIサンタのツールを幅広くフルにご活用いただける、月額サブスクリプションプランです。</p>
         <a class="pbtn" href="mailto:bpx.snc1980@gmail.com?subject=AIサンタ Plan A 申し込み">このプランで申し込む</a>
-      </div>
-      <div class="plan reveal">
-        <div class="pname">Plan B</div>
-        <div class="psub">Standard</div>
-        <div class="amt"><span class="yen">¥</span>6,500</div>
-        <div class="per">／ 月（税込）</div>
-        <p class="pdesc">幅広いAIツールをバランスよくご利用いただけるスタンダードなプランです。</p>
-        <a class="pbtn" href="mailto:bpx.snc1980@gmail.com?subject=AIサンタ Plan B 申し込み">このプランで申し込む</a>
-      </div>
-      <div class="plan reveal">
-        <div class="pname">Plan C</div>
-        <div class="psub">Light</div>
-        <div class="amt"><span class="yen">¥</span>5,000</div>
-        <div class="per">／ 月（税込）</div>
-        <p class="pdesc">基本のAIツールを気軽にご利用いただけるライトなプランです。</p>
-        <a class="pbtn" href="mailto:bpx.snc1980@gmail.com?subject=AIサンタ Plan C 申し込み">このプランで申し込む</a>
-      </div>
-      <div class="plan reveal">
-        <div class="pname">Plan D</div>
-        <div class="psub">Starter</div>
-        <div class="amt"><span class="yen">¥</span>3,000</div>
-        <div class="per">／ 月（税込）</div>
-        <p class="pdesc">まずは気軽に始めていただける、入門向けのプランです。</p>
-        <a class="pbtn" href="mailto:bpx.snc1980@gmail.com?subject=AIサンタ Plan D 申し込み">このプランで申し込む</a>
       </div>
     </div>
 
