@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI口コミ 無料体験デモ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#2f9bd6; --brand-deep:#1f6f9e; --cta:#1aa54b; --cta-press:#15863d;
+  --ink:#1a1a1a; --ink-soft:#666; --bg:#eef3f7; --card:#fff; --line:#e3e9ef;
+  --serif:"Shippori Mincho",serif; --sans:"Zen Kaku Gothic New",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;justify-content:center;min-height:100vh;padding:16px;}
+.app{width:100%;max-width:440px;background:var(--card);border-radius:22px;box-shadow:0 18px 50px rgba(20,40,70,.16);overflow:hidden;display:flex;flex-direction:column;min-height:calc(100vh - 32px);}
+
+/* ヘッダー＋進捗 */
+.top{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;padding:18px 22px 16px;}
+.top .brand{display:flex;align-items:center;gap:8px;font-weight:900;font-size:16px;letter-spacing:.02em;}
+.top .brand .logo{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.demo-flag{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:20px;letter-spacing:.06em;}
+.bar{height:5px;background:rgba(255,255,255,.25);border-radius:4px;margin-top:14px;overflow:hidden;}
+.bar > i{display:block;height:100%;width:0;background:#fff;border-radius:4px;transition:width .4s;}
+
+.body{flex:1;padding:26px 22px 16px;}
+.foot{padding:14px 22px 22px;}
+
+.q-label{font-weight:900;font-size:19px;line-height:1.5;margin-bottom:6px;}
+.q-sub{font-size:13px;color:var(--ink-soft);margin-bottom:18px;}
+.chips{display:flex;flex-wrap:wrap;gap:10px;}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:30px;padding:11px 16px;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;}
+.chip:hover{border-color:var(--brand);}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700;}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:18px;border:none;border-radius:40px;cursor:pointer;font-family:var(--sans);font-weight:900;font-size:18px;transition:transform .1s,background .2s,opacity .2s;}
+.btn.primary{background:var(--cta);color:#fff;box-shadow:0 8px 20px rgba(26,165,75,.32);}
+.btn.primary:hover{background:var(--cta-press);}
+.btn.primary:active{transform:translateY(2px);}
+.btn.ghost{background:#fff;color:var(--brand-deep);border:1.5px solid var(--line);box-shadow:none;font-size:15px;padding:14px;}
+.btn:disabled{opacity:.4;pointer-events:none;}
+.back{display:inline-block;margin-bottom:14px;color:var(--ink-soft);font-size:13px;cursor:pointer;}
+
+/* ようこそ */
+.welcome{text-align:center;padding-top:18px;}
+.welcome .emoji{font-size:54px;}
+.welcome h1{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.6;margin:14px 0 10px;}
+.welcome p{font-size:14px;color:var(--ink-soft);line-height:1.9;}
+.welcome .time{display:inline-block;margin-top:16px;font-size:12px;color:var(--brand-deep);background:#e7f2fa;padding:6px 14px;border-radius:20px;font-weight:700;}
+
+/* 生成中 */
+.gen{text-align:center;padding-top:46px;}
+.spinner{width:54px;height:54px;border:5px solid #e6eef5;border-top-color:var(--brand);border-radius:50%;margin:0 auto 22px;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.gen h2{font-weight:900;font-size:18px;margin-bottom:8px;}
+.gen p{font-size:13px;color:var(--ink-soft);}
+
+/* 結果 */
+.result h2{font-weight:900;font-size:18px;margin-bottom:4px;}
+.result .hint{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+.review-box{position:relative;border:1.5px solid var(--line);border-radius:16px;padding:16px;background:#fbfdff;}
+.review-box .stars{color:#f5a623;font-size:18px;letter-spacing:2px;margin-bottom:10px;}
+.review-box textarea{width:100%;border:none;background:transparent;resize:none;font-family:var(--sans);font-size:14.5px;line-height:1.85;color:var(--ink);min-height:150px;outline:none;}
+.regen{margin-top:12px;}
+
+/* 完了 */
+.done{text-align:center;padding-top:40px;}
+.done .check{width:74px;height:74px;border-radius:50%;background:var(--cta);color:#fff;font-size:38px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.done h2{font-weight:900;font-size:21px;margin-bottom:10px;}
+.done p{font-size:13.5px;color:var(--ink-soft);line-height:1.9;}
+.note{font-size:11px;color:#9aa3ab;text-align:center;margin-top:14px;line-height:1.6;}
+
+.hidden{display:none;}
+.gmark{font-weight:700;}
+.gmark .b{color:#4285F4;} .gmark .r{color:#EA4335;} .gmark .y{color:#FBBC05;} .gmark .g{color:#34A853;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top">
+    <div class="brand"><span class="logo">★</span><span id="shopName">café &amp; zakka hibi</span></div>
+    <span class="demo-flag">DEMO ／ 無料体験版</span>
+    <div class="bar"><i id="bar"></i></div>
+  </div>
+
+  <div class="body" id="body"><!-- JSで差し替え --></div>
+  <div class="foot" id="foot"></div>
+
+</div>
+
+<script>
+/* ===== 店舗ごとに変える設定（デモ用サンプル） ===== */
+const CONFIG = {
+  shopName: "café & zakka hibi",
+  welcomeEmoji: "🌿",
+  // 質問とチップ（valueに口コミ用フレーズを持たせる＝API無しで“それっぽい”文章を組み立てる）
+  questions: [
+    { key:"used", label:"本日は、何を利用されましたか？", sub:"あてはまるものを選んでください（1つ以上）", multi:true, chips:[
+      {t:"カフェ・ドリンク", f:"ゆっくりカフェの時間を過ごしました"},
+      {t:"ランチ・フード", f:"ランチをいただきました"},
+      {t:"雑貨のお買い物", f:"雑貨を見て買い物を楽しみました"},
+      {t:"ギフト選び", f:"贈り物を選びに来ました"},
+    ]},
+    { key:"good", label:"良かった点は？", sub:"いくつでもどうぞ", multi:true, chips:[
+      {t:"雰囲気が落ち着く", f:"店内の雰囲気がとても落ち着いていて居心地がよかったです"},
+      {t:"スタッフが丁寧", f:"スタッフの方の対応がとても丁寧で気持ちよく過ごせました"},
+      {t:"商品の質が高い", f:"置いてある商品のセンスとクオリティが高かったです"},
+      {t:"おいしかった", f:"提供されたものがどれもおいしかったです"},
+      {t:"清潔感がある", f:"店内が清潔で気持ちよかったです"},
+      {t:"また来たい", f:"また訪れたいと思えるお店でした"},
+    ]},
+    { key:"impression", label:"スタッフ・お店の印象は？", sub:"近いものを選んでください", multi:true, chips:[
+      {t:"親しみやすい", f:"スタッフの方が親しみやすく、気軽に過ごせました"},
+      {t:"おしゃれ", f:"内装やディスプレイがおしゃれでした"},
+      {t:"ほっとする", f:"訪れるとほっと一息つける空間でした"},
+      {t:"こだわりを感じる", f:"細部までこだわりが感じられました"},
+    ]},
+    { key:"recommend", label:"どんな人におすすめ？", sub:"近いものを選んでください", multi:true, chips:[
+      {t:"友人とゆっくり", f:"友人とゆっくり過ごしたい方におすすめです"},
+      {t:"ひとり時間に", f:"ひとりで静かに過ごしたい方にもぴったりです"},
+      {t:"ギフトを探す人", f:"大切な人への贈り物を探している方にもおすすめです"},
+      {t:"近所の人", f:"近くに住む方にこそ知ってほしいお店です"},
+    ]},
+  ],
+  googleReviewUrl: "" // 本番では店舗のGoogleクチコミURLを入れる
+};
+
+/* ===== 状態 ===== */
+let step = 0;                 // 0:welcome, 1..N:questions, N+1:generating, N+2:result, N+3:done
+const answers = {};
+const Q = CONFIG.questions;
+const TOTAL = Q.length;
+
+const body = document.getElementById('body');
+const foot = document.getElementById('foot');
+const bar = document.getElementById('bar');
+document.getElementById('shopName').textContent = CONFIG.shopName;
+
+function setBar(){
+  let pct = 0;
+  if(step===0) pct=4;
+  else if(step>=1 && step<=TOTAL) pct = (step/(TOTAL+1))*100;
+  else pct = 100;
+  bar.style.width = pct + "%";
+}
+
+function render(){
+  setBar();
+  // ようこそ
+  if(step===0){
+    body.innerHTML = `<div class="welcome">
+      <div class="emoji">${CONFIG.welcomeEmoji}</div>
+      <h1>${CONFIG.shopName}を<br>ご利用ありがとうございます。</h1>
+      <p>かんたんな質問に答えるだけで、<br>AIがあなたのクチコミ文章を作成します。</p>
+      <span class="time">所要 約30秒・選んでいくだけ</span>
+    </div>`;
+    foot.innerHTML = `<button class="btn primary" onclick="next()">はじめる　→</button>`;
+    return;
+  }
+  // 質問
+  if(step>=1 && step<=TOTAL){
+    const q = Q[step-1];
+    const sel = answers[q.key] || [];
+    body.innerHTML =
+      (step>1 ? `<span class="back" onclick="prev()">‹ もどる</span>` : ``) +
+      `<div class="q-label">Q${step}. ${q.label}</div>
+       <div class="q-sub">${q.sub}</div>
+       <div class="chips">${q.chips.map((c,i)=>
+          `<div class="chip ${sel.includes(i)?'on':''}" onclick="toggle(${i})">${c.t}</div>`
+       ).join('')}</div>`;
+    const ok = sel.length>0;
+    foot.innerHTML = `<button class="btn primary" ${ok?'':'disabled'} onclick="next()">${step<TOTAL?'次へ　→':'クチコミを作る　→'}</button>`;
+    return;
+  }
+  // 生成中
+  if(step===TOTAL+1){
+    body.innerHTML = `<div class="gen">
+      <div class="spinner"></div>
+      <h2>AIがクチコミを作成中…</h2>
+      <p>あなたの回答をもとに、自然な文章にまとめています。</p>
+    </div>`;
+    foot.innerHTML = ``;
+    setTimeout(()=>{ step=TOTAL+2; render(); }, 1800);
+    return;
+  }
+  // 結果
+  if(step===TOTAL+2){
+    const text = buildReview();
+    body.innerHTML = `<div class="result">
+      <h2>クチコミができました ✨</h2>
+      <div class="hint">気になるところは、そのまま手直しできます。</div>
+      <div class="review-box">
+        <div class="stars">★★★★★</div>
+        <textarea id="reviewText">${text}</textarea>
+      </div>
+      <div class="regen"><button class="btn ghost" onclick="regen()">↻ 別の文章で作り直す</button></div>
+    </div>`;
+    foot.innerHTML = `<button class="btn primary" onclick="post()"><span class="gmark"><span class="b">G</span><span class="r">o</span><span class="y">o</span><span class="b">g</span><span class="g">l</span><span class="r">e</span></span> に投稿する　→</button>`;
+    return;
+  }
+  // 完了
+  if(step===TOTAL+3){
+    body.innerHTML = `<div class="done">
+      <div class="check">✓</div>
+      <h2>ありがとうございました！</h2>
+      <p>本番では、この内容がそのまま<br>Googleのクチコミ投稿画面にコピーされ、<br>お客様はワンタップで投稿できます。</p>
+      <div class="note">※これは無料の体験デモです。実際の投稿は行われません。</div>
+    </div>`;
+    foot.innerHTML = `<button class="btn primary" onclick="location.href='faq.html'">サービスのQ&A（よくある質問）を見る →</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="restart()">もう一度ためす</button>`;
+    return;
+  }
+}
+
+/* ===== 操作 ===== */
+function toggle(i){
+  const q = Q[step-1];
+  const sel = answers[q.key] || (answers[q.key]=[]);
+  const idx = sel.indexOf(i);
+  if(idx>=0) sel.splice(idx,1); else sel.push(i);
+  render();
+}
+function next(){ step++; render(); window.scrollTo(0,0); }
+function prev(){ if(step>1){ step--; render(); } }
+function regen(){ document.getElementById('reviewText').value = buildReview(); }
+function post(){ step=TOTAL+3; render(); }
+function restart(){ step=0; for(const k in answers) delete answers[k]; render(); }
+
+/* ===== 疑似AI：回答フレーズを自然な文章に組み立てる（API不要） ===== */
+function buildReview(){
+  let parts = [];
+  Q.forEach(q=>{
+    (answers[q.key]||[]).forEach(i=> parts.push(q.chips[i].f));
+  });
+  if(parts.length===0) parts.push("とても良いお店でした");
+  // 重複を避けつつ軽くシャッフル（毎回少し変わる＝“生成”感）
+  parts = shuffle(parts.slice());
+  // 文の組み立て：先頭にオープニング、末尾にクロージングを少し変化させる
+  const opens = ["先日利用しました。","はじめて伺いました。","また来てしまいました。","ふらっと立ち寄りました。"];
+  const closes = ["また利用したいです。","次もまた来ます。","おすすめのお店です。","ぜひ一度行ってみてください。"];
+  const open = pick(opens), close = pick(closes);
+  let s = parts.join("。").replace(/。。/g,"。");
+  if(!/。$/.test(s)) s += "。";
+  return open + s + close;
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(seededRand()* (i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let _seed = 1;
+function seededRand(){ _seed = (_seed*9301+49297)%233280; return _seed/233280; }
+function pick(arr){ return arr[Math.floor(seededRand()*arr.length)]; }
+// 毎回違う種に
+function reseed(){ _seed = (Date.now? (Date.now()%233280) : Math.floor(Math.random()*233280)) || 1; }
+const _origRegen = regen; regen = function(){ reseed(); _origRegen(); };
+const _origBuildAtResult = ()=>{}; // noop
+
+render();
+reseed();
+</script>
+</body>
+</html>

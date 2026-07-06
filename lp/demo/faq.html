@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>よくあるご質問 ｜ AI口コミ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#2f9bd6; --brand-deep:#1f6f9e; --cta:#1aa54b; --cta-press:#15863d;
+  --ink:#1a1a1a; --ink-soft:#5a6a76; --bg:#eef3f7; --card:#fff; --line:#e3e9ef;
+  --serif:"Shippori Mincho",serif; --sans:"Zen Kaku Gothic New",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;justify-content:center;min-height:100vh;}
+.app{width:100%;max-width:460px;background:var(--card);min-height:100vh;box-shadow:0 0 50px rgba(20,40,70,.12);}
+
+.top{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;padding:26px 24px 30px;text-align:center;}
+.top .en{font-size:11px;font-weight:700;letter-spacing:.28em;opacity:.9;}
+.top h1{font-family:var(--serif);font-weight:600;font-size:24px;margin-top:8px;letter-spacing:.03em;}
+.top p{font-size:12.5px;opacity:.92;margin-top:8px;}
+
+.list{padding:16px 16px 8px;}
+.qa{border:1.5px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;background:#fff;transition:box-shadow .2s;}
+.qa.open{box-shadow:0 8px 22px rgba(30,60,90,.1);border-color:#cfe3f1;}
+.q{display:flex;align-items:center;gap:12px;padding:16px 16px;cursor:pointer;user-select:none;}
+.q .mark{flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-family:var(--serif);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.q .txt{flex:1;font-size:15px;font-weight:700;line-height:1.5;}
+.q .plus{flex:0 0 auto;color:var(--brand);font-size:22px;font-weight:700;transition:transform .25s;}
+.qa.open .q .plus{transform:rotate(45deg);}
+.a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.a .inner{padding:0 16px 18px 54px;font-size:14px;line-height:1.9;color:var(--ink-soft);}
+.a .inner .em{color:var(--brand-deep);font-weight:700;}
+.a .inner .warn{display:block;margin-top:8px;font-size:12.5px;color:#9aa3ab;}
+
+.foot{padding:18px 20px 30px;text-align:center;}
+.foot .lead{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px;line-height:1.8;}
+.btn{display:block;width:100%;padding:18px;border:none;border-radius:40px;cursor:pointer;font-family:var(--sans);font-weight:900;font-size:17px;text-decoration:none;text-align:center;}
+.btn.primary{background:var(--cta);color:#fff;box-shadow:0 8px 20px rgba(26,165,75,.3);}
+.btn.primary:hover{background:var(--cta-press);}
+.back{display:inline-block;margin-top:16px;color:var(--brand-deep);font-size:13px;text-decoration:none;}
+.back:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top">
+    <div class="en">Q &amp; A</div>
+    <h1>よくあるご質問</h1>
+    <p>サービスについて、よくいただく質問をまとめました。</p>
+  </div>
+
+  <div class="list" id="list">
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">店舗のサービス内容によって、質問内容を変えられますか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner"><span class="em">はい、できます。</span>打ち合わせでどのようなサービスかを把握し、お店に合わせて質問を作成します。</div></div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">この質問（アンケート）を作るのに、どれくらい時間がかかりますか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner"><span class="em">約30分の打ち合わせ</span>で完成できます。</div></div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">商品やサービスが変わったら、変更はできますか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner">契約期間中、<span class="em">何度でも変更が可能</span>です。</div></div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">開発費用はかかりますか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner"><span class="em">かかりません。</span>開発費用は0円で、ご利用料（月額）のみ発生します。<span class="warn">※最低利用期間の規定があります。</span></div></div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">Googleの規定に抵触することはありませんか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner">AIにGoogleの規定を読み込ませ、<span class="em">問題ないと判断されています。</span>規定に抵触するのは「強引にクチコミを書かせる行為」「良い口コミを書くよう誘導する行為」などです。本サービスのアンケートは、回答例にネガティブな選択肢も含めることで、そうした誘導を防いでいます。</div></div>
+    </div>
+
+    <div class="qa">
+      <div class="q"><span class="mark">Q</span><span class="txt">途中でやめたくなったら、解約できますか？</span><span class="plus">+</span></div>
+      <div class="a"><div class="inner">規定の<span class="em">最低利用期間を超えていれば、いつでも解約が可能</span>です。</div></div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <div class="lead">まずは30分の打ち合わせから。<br>あなたのお店に合わせてご提案します。</div>
+    <a class="btn primary" href="#" onclick="alert('※デモボタンです。実際はお問い合わせ先（LINE/電話/フォーム）に接続します。');return false;">無料で相談する →</a>
+    <a class="back" href="index.html">← デモをもう一度見る</a>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.qa').forEach(function(qa){
+  qa.querySelector('.q').addEventListener('click',function(){
+    var open = qa.classList.contains('open');
+    // 他を閉じる（アコーディオン）
+    document.querySelectorAll('.qa').forEach(function(o){ o.classList.remove('open'); o.querySelector('.a').style.maxHeight=null; });
+    if(!open){ qa.classList.add('open'); var a=qa.querySelector('.a'); a.style.maxHeight=a.scrollHeight+'px'; }
+  });
+});
+</script>
+</body>
+</html>

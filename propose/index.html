@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>プロポーズ診断｜あなたにぴったりのプロポーズプランを</title>
+<meta name="description" content="彼女のことを思い浮かべて10個の質問に答えるだけ。彼女がいちばん喜ぶ、ぴったりのプロポーズプランを提案します。">
+<style>
+  :root{
+    --bg:#fbf7f4;
+    --bg2:#f4ebe6;
+    --ink:#3a322e;
+    --ink-soft:#7a6f68;
+    --line:#e6d9d1;
+    --accent:#b98a78;      /* くすみローズ */
+    --accent-deep:#9c6a58;
+    --gold:#c2a878;
+    --card:#ffffff;
+    --shadow:0 18px 50px rgba(120,90,75,.12);
+    --serif:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+    --sans:"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:var(--serif);
+    color:var(--ink);
+    background:linear-gradient(160deg,var(--bg) 0%,var(--bg2) 100%);
+    min-height:100dvh;
+    line-height:1.85;
+    letter-spacing:.04em;
+    overflow-x:hidden;
+  }
+  .wrap{
+    max-width:560px;margin:0 auto;padding:0 22px;
+    min-height:100dvh;display:flex;flex-direction:column;
+  }
+  /* ===== 装飾 ===== */
+  .petal{position:fixed;top:-40px;font-size:18px;color:var(--accent);opacity:.35;pointer-events:none;z-index:0;animation:fall linear infinite;}
+  @keyframes fall{
+    0%{transform:translateY(-40px) rotate(0deg);opacity:0;}
+    10%{opacity:.4;}
+    100%{transform:translateY(105dvh) rotate(360deg);opacity:0;}
+  }
+  /* ===== 画面共通 ===== */
+  .screen{display:none;flex:1;flex-direction:column;justify-content:center;padding:46px 0;position:relative;z-index:1;animation:rise .7s ease both;}
+  .screen.active{display:flex;}
+  @keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ===== スタート ===== */
+  .hero-mark{font-size:13px;letter-spacing:.5em;color:var(--accent-deep);text-align:center;margin-bottom:26px;text-indent:.5em;}
+  .hero-title{font-size:30px;font-weight:600;text-align:center;line-height:1.7;margin-bottom:6px;}
+  .hero-title small{display:block;font-size:15px;color:var(--ink-soft);letter-spacing:.2em;margin-top:18px;font-weight:400;}
+  .divider{width:48px;height:1px;background:var(--gold);margin:30px auto;}
+  .hero-lead{text-align:center;color:var(--ink-soft);font-size:15px;line-height:2.1;margin-bottom:40px;}
+  .hero-lead b{color:var(--ink);font-weight:600;}
+
+  .btn{
+    display:block;width:100%;border:none;cursor:pointer;
+    font-family:var(--serif);font-size:17px;letter-spacing:.12em;
+    color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-deep));
+    padding:18px;border-radius:999px;box-shadow:0 12px 30px rgba(156,106,88,.32);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:none;color:var(--accent-deep);box-shadow:none;border:1px solid var(--line);}
+  .note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:16px;letter-spacing:.08em;}
+
+  /* ===== 質問 ===== */
+  .progress-wrap{margin-bottom:34px;}
+  .progress-meta{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--ink-soft);letter-spacing:.1em;margin-bottom:10px;}
+  .progress-meta .num{font-size:13px;color:var(--accent-deep);}
+  .progress-bar{height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--accent));transition:width .5s cubic-bezier(.4,0,.2,1);}
+
+  .q-text{font-size:22px;font-weight:600;line-height:1.7;margin-bottom:8px;min-height:2.6em;}
+  .q-hint{font-size:12px;color:var(--ink-soft);letter-spacing:.08em;margin-bottom:24px;}
+  .q-hint::before{content:"♡ ";color:var(--accent);}
+  .options{display:flex;flex-direction:column;gap:13px;}
+  .opt{
+    position:relative;text-align:left;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;font-family:var(--serif);font-size:16px;color:var(--ink);
+    line-height:1.6;box-shadow:0 6px 18px rgba(120,90,75,.06);
+    transition:transform .18s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease;
+  }
+  .opt:active{transform:scale(.98);}
+  .opt.sel{border-color:var(--accent);background:#fff;box-shadow:0 10px 26px rgba(156,106,88,.18);}
+  .opt .em{display:block;font-size:20px;margin-bottom:4px;}
+  .opt.sel::after{content:"♥";position:absolute;top:14px;right:16px;color:var(--accent);font-size:14px;}
+
+  .q-nav{margin-top:26px;display:flex;justify-content:center;}
+  .back{background:none;border:none;color:var(--ink-soft);font-family:var(--serif);font-size:13px;cursor:pointer;letter-spacing:.1em;padding:8px;}
+  .back:disabled{opacity:0;pointer-events:none;}
+
+  /* ===== ローディング ===== */
+  #loading{text-align:center;}
+  .loader{width:46px;height:46px;margin:0 auto 26px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #loading p{color:var(--ink-soft);font-size:15px;letter-spacing:.15em;}
+
+  /* ===== 結果 ===== */
+  .res-mark{text-align:center;font-size:12px;letter-spacing:.45em;color:var(--accent-deep);margin-bottom:14px;text-indent:.45em;}
+  .res-card{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    padding:34px 26px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .res-card::before{content:"";position:absolute;top:-60px;right:-60px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(194,168,120,.18),transparent 70%);}
+  .res-illust{margin:-34px -26px 16px;line-height:0;border-bottom:1px solid var(--line);}
+  .res-illust svg{display:block;width:100%;height:auto;}
+  .res-emoji{font-size:40px;text-align:center;margin-bottom:4px;}
+  .res-emoji:empty{display:none;}
+  .res-type{text-align:center;font-size:13px;color:var(--accent-deep);letter-spacing:.2em;margin-bottom:8px;}
+  .res-title{text-align:center;font-size:25px;font-weight:600;line-height:1.6;margin-bottom:18px;}
+  .res-catch{text-align:center;font-size:15px;color:var(--ink-soft);line-height:2;margin-bottom:26px;}
+  .res-section{border-top:1px solid var(--line);padding-top:18px;margin-top:18px;}
+  .res-section h3{font-size:13px;color:var(--accent-deep);letter-spacing:.15em;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .res-section h3 .ic{font-size:14px;}
+  .res-section p{font-size:15.5px;line-height:1.95;color:var(--ink);}
+  .res-words{font-style:normal;background:var(--bg);border-radius:12px;padding:16px 18px;font-size:15.5px;line-height:2;color:var(--accent-deep);}
+
+  .disclaimer{font-size:12px;color:var(--ink-soft);line-height:1.9;text-align:center;margin:26px 6px 0;letter-spacing:.05em;}
+
+  /* AI card */
+  .ai-card{margin-top:30px;background:linear-gradient(160deg,#fff,#f7f0fb);border:1px solid #e8dcef;border-radius:22px;padding:30px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .ai-mark{text-align:center;font-size:11px;letter-spacing:.35em;color:#9b6fb0;margin-bottom:12px;text-indent:.35em;}
+  .ai-title{text-align:center;font-size:20px;font-weight:600;line-height:1.7;margin-bottom:12px;}
+  .ai-lead{text-align:center;font-size:13.5px;color:var(--ink-soft);line-height:1.95;margin-bottom:22px;}
+  .ai-form{display:flex;flex-direction:column;gap:14px;margin-bottom:20px;}
+  .ai-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--ink);letter-spacing:.04em;}
+  .ai-form label span{color:var(--ink-soft);font-size:11px;}
+  .ai-form input,.ai-form textarea{font-family:var(--serif);font-size:15px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:100%;resize:none;line-height:1.6;}
+  .ai-form input:focus,.ai-form textarea:focus{outline:none;border-color:#b98ac9;box-shadow:0 0 0 3px rgba(185,138,201,.15);}
+  .ai-btn{background:linear-gradient(135deg,#b07fc7,#8e5aa8);box-shadow:0 12px 30px rgba(142,90,168,.3);}
+  .ai-btn:disabled{opacity:.6;pointer-events:none;}
+  .ai-note{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:12px;line-height:1.7;}
+  .ai-output{margin-top:22px;}
+  .ai-loading{display:flex;align-items:center;justify-content:center;gap:12px;color:var(--ink-soft);font-size:14px;padding:14px 0;}
+  .loader.sm{width:24px;height:24px;margin:0;border-width:2px;}
+  .ai-text{white-space:pre-wrap;background:#fff;border:1px solid #e8dcef;border-radius:14px;padding:20px 20px;font-size:16px;line-height:2.05;color:var(--accent-deep);letter-spacing:.03em;}
+  .ai-text:empty{display:none;}
+  .ai-output-actions{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+
+  /* CTA */
+  .cta{
+    margin-top:30px;background:linear-gradient(160deg,#fff,#fbf2ee);
+    border:1px solid var(--line);border-radius:22px;padding:30px 24px;text-align:center;box-shadow:var(--shadow);
+  }
+  .cta h2{font-size:19px;font-weight:600;line-height:1.7;margin-bottom:10px;}
+  .cta p{font-size:14px;color:var(--ink-soft);line-height:2;margin-bottom:22px;}
+  .cta .btn{background:linear-gradient(135deg,#06C755,#04a948);box-shadow:0 12px 30px rgba(6,199,85,.3);}
+  .actions{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+
+  .footer{text-align:center;font-size:11px;color:var(--ink-soft);letter-spacing:.1em;padding:30px 0 26px;opacity:.8;}
+
+  @media(max-width:380px){
+    .hero-title{font-size:26px;}
+    .q-text{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===== スタート ===== -->
+  <section class="screen active" id="start">
+    <div class="hero-mark">PROPOSAL  DIAGNOSIS</div>
+    <h1 class="hero-title">
+      彼女にぴったりの<br>プロポーズが、わかる。
+      <small>彼女を思い浮かべて、10の質問に答えるだけ</small>
+    </h1>
+    <div class="divider"></div>
+    <p class="hero-lead">
+      プロポーズの成功は、<br>
+      <b>「彼女が何を望んでいるか」</b>を<br>
+      どれだけ知っているかで決まります。<br>
+      彼女のことを思い出しながら答えて、<br>
+      いちばん喜ぶプランを見つけましょう。
+    </p>
+    <button class="btn" onclick="start()">診断をはじめる</button>
+    <p class="note">所要時間 約1分／登録不要・無料</p>
+  </section>
+
+  <!-- ===== 質問 ===== -->
+  <section class="screen" id="quiz">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span>彼女についての質問</span>
+        <span class="num"><b id="qNow">1</b> / <span id="qTotal">10</span></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <p class="q-hint">直感で、いちばん近いものを選んでください</p>
+    <div class="options" id="opts"></div>
+    <div class="q-nav"><button class="back" id="backBtn" onclick="back()">← ひとつ戻る</button></div>
+  </section>
+
+  <!-- ===== ローディング ===== -->
+  <section class="screen" id="loading">
+    <div class="loader"></div>
+    <p id="loadMsg">ふたりの答えを、読み解いています…</p>
+  </section>
+
+  <!-- ===== 結果 ===== -->
+  <section class="screen" id="result">
+    <div class="res-mark">FOR  HER</div>
+    <div class="res-card">
+      <div class="res-illust" id="rIllust"></div>
+      <div class="res-emoji" id="rEmoji"></div>
+      <div class="res-type" id="rType"></div>
+      <h2 class="res-title" id="rTitle"></h2>
+      <p class="res-catch" id="rCatch"></p>
+
+      <div class="res-section"><h3><span class="ic">📖</span>こんなプロポーズ</h3><p id="rScene"></p></div>
+      <div class="res-section"><h3><span class="ic">💎</span>用意するもの</h3><p id="rGift"></p></div>
+      <div class="res-section"><h3><span class="ic">🕊</span>ベストなタイミング</h3><p id="rTiming"></p></div>
+      <div class="res-section"><h3><span class="ic">💬</span>かける言葉（例）</h3><p class="res-words" id="rWords"></p></div>
+      <div class="res-section"><h3><span class="ic">🌹</span>成功のワンポイント</h3><p id="rPoint"></p></div>
+    </div>
+
+    <p class="disclaimer">
+      ※この提案は、あなたが思い浮かべた彼女像から導いた<br>
+      「参考プラン」です。彼女を喜ばせる正解は、ひとつではありません。<br>
+      いちばん彼女を知っているあなたの視点で、自由にアレンジを。
+    </p>
+
+    <!-- ===== AI：世界にひとつのプロポーズの言葉 ===== -->
+    <div class="ai-card">
+      <div class="ai-mark">✨ AI SPECIAL ✨</div>
+      <h2 class="ai-title">世界にひとつだけの<br>プロポーズの言葉を、AIが。</h2>
+      <p class="ai-lead">
+        診断結果のトーンに合わせて、AIが<br>
+        あなただけのプロポーズのセリフを考えます。<br>
+        下の3つを入れるほど、言葉が特別になります。
+      </p>
+      <div class="ai-form">
+        <label>彼女の呼び方 <span>（例：ゆいちゃん／みさき）</span>
+          <input id="aiName" type="text" maxlength="20" placeholder="例：ゆいちゃん">
+        </label>
+        <label>ふたりの思い出・エピソード <span>（任意）</span>
+          <textarea id="aiEpisode" rows="2" maxlength="120" placeholder="例：付き合って3年。よく海にドライブに行った"></textarea>
+        </label>
+        <label>彼女の好きなところ <span>（任意）</span>
+          <input id="aiCharm" type="text" maxlength="60" placeholder="例：いつも笑顔で、人にやさしいところ">
+        </label>
+      </div>
+      <button class="btn ai-btn" id="aiBtn" onclick="createWords()">AIに言葉を作ってもらう</button>
+      <p class="ai-note">※ふざけた内容や悪用はご遠慮ください。生成結果はあくまで“たたき台”です。</p>
+
+      <div id="aiResult" class="ai-output" style="display:none;">
+        <div id="aiLoading" class="ai-loading" style="display:none;">
+          <div class="loader sm"></div><span>あなたの想いを、言葉にしています…</span>
+        </div>
+        <div id="aiText" class="ai-text"></div>
+        <div id="aiActions" class="ai-output-actions" style="display:none;">
+          <button class="btn ghost" onclick="createWords()">別の言葉も作る</button>
+          <button class="btn ghost" onclick="copyWords()">この言葉をコピー</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h2>でも、本番で失敗したくない。<br>そんなあなたへ。</h2>
+      <p>
+        場所選び・段取り・指輪・当日の演出まで。<br>
+        「ぜんぶ丸ごと相談したい」「想いだけ伝えて、<br>
+        あとはおまかせしたい」——そんな声に応えます。<br>
+        福井で、あなただけのプロポーズを一緒に。
+      </p>
+      <a class="btn" href="#" id="lineCta">LINEでこっそり相談する（無料）</a>
+      <div class="actions">
+        <button class="btn ghost" onclick="shareResult()">結果をシェアする</button>
+        <button class="btn ghost" onclick="restart()">もう一度診断する</button>
+      </div>
+    </div>
+
+    <div class="footer">Proposal Diagnosis ／ プロポーズプロデュース</div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   設定：ここを書き換えるだけで運用できます
+   ========================================================= */
+const CONFIG = {
+  // ↓あなたのLINE公式アカウントのURLに差し替えてください
+  lineUrl: "https://line.me/R/ti/p/@your-line-id",
+  shareTitle: "プロポーズ診断｜彼女にぴったりのプロポーズがわかる",
+  // AI機能のエンドポイント（Netlify関数）。AIを使わない場合はそのままでOK
+  apiEndpoint: "https://poker-afterall.netlify.app/api/claude"
+};
+
+/* =========================================================
+   質問（10問・選択肢は最大4つ）
+   各選択肢の score でプランに加点します
+   プランキー: resto / home / travel / memory / nature / hotel
+   ========================================================= */
+// score = 舞台(WHERE) への加点 / how = 演出トーン(HOW) への加点
+const QUESTIONS = [
+  {
+    q:"彼女の性格は、どちらかといえば？",
+    opts:[
+      {em:"💃",t:"華やかで、社交的なタイプ",score:{resto:2,hotel:1,travel:1},how:{luxury:2,royal:1}},
+      {em:"😄",t:"明るくて、親しみやすいタイプ",score:{home:1,memory:1},how:{cozy:1,royal:1}},
+      {em:"🌿",t:"物静かで、落ち着いたタイプ",score:{nature:2,hotel:1},how:{quiet:2}},
+      {em:"🙈",t:"シャイで、照れ屋なタイプ",score:{home:1,memory:1,nature:1},how:{quiet:1,cozy:1}},
+    ]
+  },
+  {
+    q:"うれしいことがあったとき、彼女は？",
+    opts:[
+      {em:"🎉",t:"テンション高く、思いきり喜ぶ",score:{travel:2,resto:1},how:{surprise:2}},
+      {em:"😊",t:"にこにこ笑顔になる",score:{home:2,resto:1},how:{cozy:1,royal:1}},
+      {em:"🥹",t:"静かに、じーんと噛みしめる",score:{nature:2,memory:1},how:{quiet:1,cozy:1}},
+      {em:"📸",t:"写真や言葉で、しっかり残したがる",score:{hotel:2,memory:1},how:{luxury:2}},
+    ]
+  },
+  {
+    q:"彼女が心地よいと感じるのは、どんな空間？",
+    opts:[
+      {em:"💎",t:"華やかで、特別感のある空間",score:{resto:2,hotel:1},how:{luxury:2}},
+      {em:"🏠",t:"あたたかく、リラックスできる空間",score:{home:1,memory:1},how:{cozy:2}},
+      {em:"✨",t:"わくわくする、非日常の空間",score:{travel:2,hotel:1},how:{surprise:2}},
+      {em:"🌙",t:"静かで、ロマンチックな空間",score:{nature:2},how:{quiet:1,royal:1}},
+    ]
+  },
+  {
+    q:"彼女が「幸せ」を感じるのは、どんな瞬間が多そう？",
+    opts:[
+      {em:"🥂",t:"特別な日に、ちょっと贅沢する瞬間",score:{hotel:2},how:{luxury:2}},
+      {em:"🍵",t:"ふたりでのんびり過ごす、何気ない瞬間",score:{home:1,nature:1},how:{cozy:2}},
+      {em:"🌅",t:"新しい場所や体験に出会う瞬間",score:{travel:2,nature:1},how:{surprise:2}},
+      {em:"📷",t:"思い出を振り返って、語り合う瞬間",score:{memory:2,home:1},how:{quiet:1,royal:1}},
+    ]
+  },
+  {
+    q:"これまでで、彼女がいちばん笑顔だったのは？",
+    opts:[
+      {em:"🎁",t:"サプライズで驚かせたとき",score:{resto:2,hotel:1},how:{surprise:2}},
+      {em:"🛋",t:"ふたりでまったり過ごしたとき",score:{home:2},how:{cozy:1,royal:1}},
+      {em:"🧳",t:"一緒に遠出・旅行したとき",score:{travel:2,nature:1},how:{surprise:1,quiet:1}},
+      {em:"📍",t:"記念日や、思い出の場所で過ごしたとき",score:{memory:2,resto:1},how:{royal:1,quiet:1}},
+    ]
+  },
+  {
+    q:"彼女がプロポーズで、いちばん大切にしそうなのは？",
+    opts:[
+      {em:"😢",t:"一生忘れられない、感動と特別感",score:{hotel:2},how:{luxury:2}},
+      {em:"🫶",t:"気取らない、自然体のしあわせ",score:{home:1},how:{cozy:2}},
+      {em:"🌙",t:"ロマンチックな雰囲気・演出",score:{nature:2,hotel:1},how:{quiet:1,royal:1}},
+      {em:"🧩",t:"ふたりらしさ・思い出とのつながり",score:{memory:2,home:1},how:{cozy:1,quiet:1}},
+    ]
+  },
+  {
+    q:"彼女がいちばん喜ぶ贈りものは、どのタイプ？",
+    opts:[
+      {em:"💍",t:"指輪など、記念に残る品",score:{resto:1,hotel:1,memory:1},how:{royal:1,luxury:1}},
+      {em:"💐",t:"花束やプレゼントなど、形のあるもの",score:{home:1,resto:1},how:{royal:1,surprise:1}},
+      {em:"✉️",t:"手紙やムービーなど、気持ちが伝わるもの",score:{home:1,memory:1},how:{quiet:1,cozy:1}},
+      {em:"🎫",t:"旅行や体験など、思い出に残ること",score:{travel:2,nature:1},how:{surprise:2}},
+    ]
+  },
+  {
+    q:"彼女が「うれしい」と感じそうなタイミングは？",
+    opts:[
+      {em:"📅",t:"ふたりの記念日",score:{resto:1,hotel:1,memory:1},how:{royal:2}},
+      {em:"🎂",t:"彼女の誕生日",score:{home:1,resto:1},how:{royal:1,surprise:1}},
+      {em:"🎄",t:"クリスマスなどのイベント",score:{hotel:1,resto:1},how:{luxury:1,royal:1}},
+      {em:"🍃",t:"なんでもない、日常のなか",score:{home:1,memory:1,nature:1},how:{cozy:1,quiet:1}},
+    ]
+  },
+  {
+    q:"彼女は、人前で祝われるのは？",
+    opts:[
+      {em:"🔒",t:"ふたりきりがいいタイプ",score:{nature:2,home:1,memory:1},how:{quiet:2}},
+      {em:"👥",t:"親しい少人数なら、うれしいタイプ",score:{resto:1,hotel:1},how:{cozy:1,royal:1}},
+      {em:"🎈",t:"みんなに祝福されたいタイプ",score:{travel:2,resto:1},how:{surprise:2}},
+      {em:"🎬",t:"にぎやかな演出の方が、盛り上がるタイプ",score:{hotel:1,travel:1},how:{luxury:2}},
+    ]
+  },
+  {
+    q:"彼女が、ひそかに憧れていそうなプロポーズは？",
+    opts:[
+      {em:"🎬",t:"映画のような、王道のロマンス",score:{resto:2,hotel:1},how:{royal:2}},
+      {em:"😊",t:"肩肘張らない、あたたかいもの",score:{travel:2,home:1},how:{cozy:1,surprise:1}},
+      {em:"📝",t:"言葉や手紙で、まっすぐ伝えるもの",score:{home:1,memory:1},how:{royal:1,quiet:1}},
+      {em:"🌌",t:"さりげなくても、心に深く残るもの",score:{nature:2,memory:1},how:{quiet:1,cozy:1}},
+    ]
+  },
+];
+
+/* =========================================================
+   プラン（結果）= 舞台(WHERE 6種) × 演出トーン(HOW 5種) = 30パターン
+   結果は「最適な舞台 × 最適なトーン」を組み合わせて生成します
+   ========================================================= */
+const WHERE = {
+  resto:{ noun:"夜景レストラン", label:"DINNER", emoji:"🍽️" },
+  home:{ noun:"おうち", label:"HOME", emoji:"🏠" },
+  travel:{ noun:"旅先", label:"TRAVEL", emoji:"✈️" },
+  memory:{ noun:"思い出の場所", label:"OUR STORY", emoji:"📍" },
+  nature:{ noun:"絶景・自然", label:"NATURE", emoji:"🌌" },
+  hotel:{ noun:"ホテル", label:"HOTEL", emoji:"🥂" },
+};
+const HOW = {
+  royal:{ adj:"王道ロマンチックな", label:"ROYAL" },
+  surprise:{ adj:"サプライズで驚かせる", label:"SURPRISE" },
+  cozy:{ adj:"あたたかく自然体な", label:"COZY" },
+  luxury:{ adj:"上品で特別感のある", label:"LUXURY" },
+  quiet:{ adj:"しっとり静かに想いを伝える", label:"QUIET" },
+};
+
+/* 30パターン＝各「舞台_トーン」ごとの具体的なプロポーズ・シナリオ */
+const PLANS30 = {
+  // ===== 🍽 夜景レストラン =====
+  resto_royal:{ title:"夜景レストランの個室で、\nひざまずいて伝える王道プロポーズ",
+    catch:"きらめく夜景を背に、まっすぐな言葉を。",
+    scene:"記念日に予約した高層階レストランの個室。メインを食べ終え、夜景がいちばん輝く時間に、おもむろに席を立って彼女の前にひざまずく。ポケットから指輪ケースを開き、まっすぐ目を見て伝える——王道中の王道だからこそ、一生語り継げる瞬間になります。",
+    gift:"婚約指輪。サイズが不安なら「一緒に選ぼう」と書いたリング型のメッセージカードを。",
+    timing:"付き合った記念日のディナー。日没後、夜景が映える時間帯に予約を。",
+    words:"「この3年、本当に幸せだった。これからの人生も、君と歩いていきたい。結婚してください。」",
+    point:"予約時に「プロポーズすること」を店に伝えると、デザートのタイミングや照明で協力してもらえます。指輪は上着の内ポケットに。" },
+  resto_surprise:{ title:"デザートプレートに「結婚してください」、\n夜景レストランの不意打ちサプライズ",
+    catch:"何も知らない彼女に、最高の不意打ちを。",
+    scene:"普通のディナーを装って予約。食後、店員が運んできたデザートプレートに、チョコソースで「結婚してください」の文字と、その横に指輪。固まる彼女に、笑顔で「ずっと言いたかったんだ」と切り出します。サプライズの破壊力は抜群。",
+    gift:"デザートプレートのメッセージ演出＋婚約指輪。花束を店に預けてタイミングで登場させても。",
+    timing:"あえて記念日を外した何気ない週末のディナーが、警戒されずに成功しやすい。",
+    words:"「驚いた？ ……実は今日、ずっと伝えたかったことがあるんだ。結婚してください。」",
+    point:"プレート演出が可能か、出すタイミングを必ず事前に店と打ち合わせ。動画を撮ってくれる協力者がいると一生の記録に。" },
+  resto_cozy:{ title:"通い慣れたお店で、\nいつものトーンで「結婚しよ」",
+    catch:"気取らない、ふたりらしい食卓で。",
+    scene:"高級店より、ふたりがよく通うお気に入りのお店。いつも通りの会話の流れで、ふと真顔になって「あのさ、これからもずっと一緒にいてくれる?」と指輪を差し出す。飾らないからこそ、彼女の涙腺はゆるみます。",
+    gift:"婚約指輪。重すぎない一輪の花をさりげなく添えても。",
+    timing:"特別な日でなくてOK。いつものデートの延長で、ふっと切り出すのが効く。",
+    words:"「いつもの君が、いちばん好きだ。これからも毎日、隣で笑っていてほしい。結婚しよう。」",
+    point:"空気を作り込みすぎないこと。いつものテンションのまま切り出すのが“自然体”の肝。店が空く時間帯を選んで。" },
+  resto_luxury:{ title:"最上階レストランを貸切感で、\nシャンパンとともに贅沢プロポーズ",
+    catch:"一生に一度を、最高に贅沢な一夜に。",
+    scene:"夜景の美しい高級レストランのいちばん良い席を予約。乾杯のシャンパングラスの脇に、または運ばれたブーケの中に指輪を忍ばせる。プロのカメラマンを手配して、その瞬間を一枚の写真に。まるで映画のワンシーン。",
+    gift:"上質な婚約指輪＋大きめのブーケ＋プロによる記念撮影。",
+    timing:"記念日やクリスマスなど特別な日。人気店は1〜2ヶ月前に予約を。",
+    words:"「最高の夜景も、このシャンパンも、これからの人生も。ぜんぶ君と分かち合いたい。結婚してください。」",
+    point:"ドレスコードをそれとなく伝え、特別な装いで来てもらうと一層映える。カメラマンの入店可否は事前確認を。" },
+  resto_quiet:{ title:"静かな個室で、\n手紙を読んでから指輪を差し出す",
+    catch:"多くを語らず、想いを手紙に込めて。",
+    scene:"静かな個室のあるレストラン。食事を終え二人きりになった頃、「ちょっと聞いてほしい」とポケットから手紙を取り出して読み上げる。読み終えて、そっと指輪を差し出す。言葉数は少なくていい、想いはもう伝わっています。",
+    gift:"手書きの手紙＋婚約指輪。",
+    timing:"静かに過ごせる平日の夜や、混まない時間帯の個室予約を。",
+    words:"（手紙の結びに）「口で言うのは照れるから、手紙にしました。これからも、そばにいてください。」",
+    point:"手紙は前日までに書いて、一度声に出して読む練習を。予約時に静かな個室・席をリクエスト。" },
+
+  // ===== 🏠 おうち =====
+  home_royal:{ title:"飾りつけた部屋で、\nひざまずいて伝えるおうちプロポーズ",
+    catch:"いちばん安心できる場所で、まっすぐに。",
+    scene:"彼女の帰宅前に、部屋をキャンドルと花で飾る。ドアを開けて驚く彼女の前でひざまずき、指輪を差し出す。家という最もリラックスできる場所だからこそ、素直な言葉がまっすぐ届きます。",
+    gift:"婚約指輪＋花束。壁をふたりの写真で飾っても。",
+    timing:"彼女の帰宅時や、家での記念日ディナーのあと。",
+    words:"「“ただいま”を一生君と言い合いたい。この家で、ずっと一緒に暮らそう。結婚してください。」",
+    point:"飾りつけの時間を作るため、彼女を外出させる口実を用意。火を使うキャンドルはくれぐれも安全に。" },
+  home_surprise:{ title:"帰宅したら部屋が一変、\nバルーンと指輪のサプライズ",
+    catch:"ドアを開けた瞬間、世界が変わる。",
+    scene:"彼女の外出中に、部屋をバルーン・写真・ガーランドで埋め尽くす。帰宅してドアを開けた彼女が「えっ!?」と固まる中、奥から指輪を持って登場。テレビにはふたりの思い出ムービーを流しておく。一部始終はこっそり録画。",
+    gift:"婚約指輪＋バルーン装飾＋思い出ムービー。",
+    timing:"彼女が数時間外出する日（友人とのランチなど）を狙って。",
+    words:"「おかえり。驚いた? ……今日からの毎日を、ずっと君と過ごしたい。結婚してください。」",
+    point:"装飾は時間がかかるので友人に手伝ってもらうとスムーズ。録画用スマホは三脚などで固定して回しておく。" },
+  home_cozy:{ title:"いつもの晩ごはんの途中で、\nさらっと「結婚しよ」",
+    catch:"飾らない日常こそ、ふたりの宝物。",
+    scene:"いつも通りの夕食。彼女の作った料理を食べながら、ふと「なあ、これずっと食べていたいな。……結婚しよ」とポケットから指輪を出す。特別な演出はなし。けれど、いつもの食卓が一生忘れられない場所に変わります。",
+    gift:"婚約指輪。彼女の好きなデザートをこっそり用意しておいても。",
+    timing:"なんでもない平日の夜ごはん。気負わないほど効く。",
+    words:"「君のごはん、世界でいちばん好きなんだ。これからも毎日、一緒に食べさせて。結婚しよう。」",
+    point:"自然体が命。緊張で挙動不審にならないよう、指輪はすぐ出せる場所に。いつものテンションのままで。" },
+  home_luxury:{ title:"自宅をレストラン風に演出、\nおうちで特別ディナープロポーズ",
+    catch:"ふたりの家を、一夜だけの特別な舞台に。",
+    scene:"テーブルクロス、キャンドル、コース料理（手作り or 取り寄せ）で、自宅を高級レストラン風に。BGMを流し、最後のデザートとともに指輪を。外の喧騒なく、ふたりだけの贅沢な空間が完成します。",
+    gift:"婚約指輪＋花束＋特別なコース料理やワイン。",
+    timing:"記念日や誕生日の夜。準備に半日ほど確保を。",
+    words:"「どんな高級店より、君とこの家で過ごす時間が好きだ。これからの人生も、ここから始めたい。結婚してください。」",
+    point:"料理は無理なら取り寄せやケータリングで十分。照明を暖色に落とすだけで一気に特別感が出ます。" },
+  home_quiet:{ title:"寝る前のソファで、\nそっと手紙と指輪を",
+    catch:"静かな夜、ふたりだけの時間に。",
+    scene:"一日の終わり、ソファで並んでくつろぐ静かな時間。「これ、読んでほしい」と手紙を渡す。読み終えた彼女が顔を上げると、指輪を差し出している——テレビも消した静けさの中で、想いだけが響きます。",
+    gift:"手書きの手紙＋婚約指輪。",
+    timing:"寝る前など、一日の終わりの穏やかな時間。",
+    words:"（手紙で）「なんでもない毎日が、君とだと特別になる。これからもずっと、隣にいてください。」",
+    point:"手紙は短くていい。読む前にテレビ・スマホを消して、静けさを作るのがポイント。" },
+
+  // ===== ✈️ 旅先 =====
+  travel_royal:{ title:"旅先の夕景スポットで、\nひざまずいてプロポーズ",
+    catch:"忘れられない景色を、一生の思い出に。",
+    scene:"旅行先の、夕日が美しい展望スポットや海辺。沈む夕日をふたりで眺めたあと、振り返ってひざまずき指輪を差し出す。非日常の絶景と王道の演出が重なって、最高のクライマックスになります。",
+    gift:"婚約指輪。旅のしおりに小さく「最終日」と書き添えても粋。",
+    timing:"旅行の中日〜最終日の夕暮れ時。日没時刻を事前に調べて。",
+    words:"「この景色、一生忘れないと思う。これからの人生も、君と一緒に見ていきたい。結婚してください。」",
+    point:"指輪は移動中の紛失に最大限注意し、常に身につけて。夕日スポットの下調べと、天候の予備日を。" },
+  travel_surprise:{ title:"「ただの旅行」と思わせて、\n最終日に指輪のサプライズ",
+    catch:"旅の終わりに、最大の不意打ちを。",
+    scene:"普通の旅行と思わせて出発。最終日の朝、絶景の前やチェックアウト前の部屋で、突然指輪を取り出す。「実はこの旅行、これを言うために計画したんだ」と打ち明ける——旅の思い出ごと、彼女の涙腺は決壊します。",
+    gift:"婚約指輪。ホテルに頼んで部屋を花やプレートで飾るサプライズも。",
+    timing:"旅行最終日。道中は警戒されないよう普通に楽しんで。",
+    words:"「楽しかった? 実はこの旅、君にプロポーズするために計画したんだ。結婚してください。」",
+    point:"ホテルのサプライズ演出サービスを事前予約すると効果絶大。指輪はスーツケースでなく手荷物で管理。" },
+  travel_cozy:{ title:"旅の何気ない瞬間に、\nふっと「結婚しよ」",
+    catch:"ふたりの旅の空気のままで。",
+    scene:"旅先のカフェや旅館の部屋、散歩の途中。気取った演出ではなく、楽しい会話の流れで「こういう旅、これからもずっとしたいな。……結婚しよ」と自然に指輪を出す。旅のリラックスした空気が、そのまま幸せに変わります。",
+    gift:"婚約指輪。旅先で見つけたお揃いの小物を添えても。",
+    timing:"旅の中で、ふたりがいちばんリラックスしている瞬間に。",
+    words:"「君との旅、ほんと楽しい。これからの人生も、ずっと一緒に旅していこう。結婚しよう。」",
+    point:"タイミングを狙いすぎないこと。自然な会話の延長で。指輪はさっと出せるポーチに。" },
+  travel_luxury:{ title:"高級リゾートのスイートで、\n花とシャンパンとともに",
+    catch:"非日常の極みで、最上のプロポーズを。",
+    scene:"憧れのリゾートホテルのスイートを予約。ホテルに依頼して、部屋を花・シャンパン・バルーンで飾ってもらう。オーシャンビューのテラスで、夕暮れとともに指輪を差し出す——まるで映画のワンシーンです。",
+    gift:"上質な婚約指輪＋ホテルのデコレーション＋記念撮影。",
+    timing:"記念日旅行や連休。人気リゾートは早めに予約を。",
+    words:"「最高の景色も、この贅沢な時間も、これからの人生も。ぜんぶ君と分かち合いたい。結婚してください。」",
+    point:"ホテルのプロポーズプラン（装飾・ケーキ・撮影）を使うと失敗が少ない。サプライズなら彼女に内緒で手配。" },
+  travel_quiet:{ title:"朝の静かな絶景の前で、\nふたりだけのプロポーズ",
+    catch:"誰もいない朝の景色に、想いをそっと。",
+    scene:"早朝、人のいない海辺や山の展望台へ。朝もやの中、静かな絶景をふたりで眺める。多くを語らず「ずっと、こうしていたい」と指輪を差し出す——静けさそのものが、最高の演出になります。",
+    gift:"婚約指輪。あたたかい飲み物を持参する気遣いも。",
+    timing:"旅先の早朝、人が少ない時間帯。",
+    words:"「言葉は得意じゃないけど……この静かな時間を、これからもずっと君と。結婚してください。」",
+    point:"早起きが必要なので前夜に「明日朝、見せたい景色がある」と伏線を。寒さ・足元対策を忘れずに。" },
+
+  // ===== 📍 思い出の場所 =====
+  memory_royal:{ title:"初デートの場所で、\nあの日の続きをプロポーズ",
+    catch:"はじまりの場所で、未来の約束を。",
+    scene:"初めてデートした場所（公園、カフェ、観覧車など）へ彼女を連れて行く。「覚えてる? ここ、初めてデートした場所」と切り出し、思い出を語ってからひざまずいて指輪を。ふたりの物語が一周して、完成する瞬間です。",
+    gift:"婚約指輪。初デートの日の写真をプリントして渡しても。",
+    timing:"出会った記念日や、その場所に意味のある日。",
+    words:"「初めてここに来た日から、君が好きだった。これからも、この続きを一緒に。結婚してください。」",
+    point:"その場所が今も入れるか・混雑しないか下見を。思い出のエピソードを具体的に話せるよう準備を。" },
+  memory_surprise:{ title:"「懐かしい場所巡り」を装って、\n最後の場所で指輪",
+    catch:"思い出を辿った先に、サプライズ。",
+    scene:"「昔行った場所、巡ってみない?」とデートに誘い、ふたりの思い出の場所をいくつか回る。最後に、いちばん大切な場所（告白した場所など）で突然指輪を取り出す。一日かけた伏線が、一気に回収されます。",
+    gift:"婚約指輪。巡った場所の写真をまとめたミニアルバムを最後に渡しても。",
+    timing:"一日かけて思い出を辿るデートとして。",
+    words:"「今日巡った場所、ぜんぶ君との思い出。これからも新しい思い出を、一緒に作りたい。結婚してください。」",
+    point:"巡るルートと所要時間を事前に計画。最後の場所での演出に集中できるよう段取りを。" },
+  memory_cozy:{ title:"いつもの散歩道で、\nさりげなく指輪を",
+    catch:"毎日通った道が、約束の場所に。",
+    scene:"ふたりがよく歩いた散歩道や近所の公園。いつもの散歩の途中、ベンチに座ったタイミングで「なあ、ここよく来たよな。……これからもずっと一緒にいてくれる?」と自然に指輪を差し出す。",
+    gift:"婚約指輪。気取らない小さなブーケを添えても。",
+    timing:"いつもの散歩やお出かけの延長で。",
+    words:"「この道、君と何回歩いたかな。これからの道も、ずっと隣で歩いていこう。結婚しよう。」",
+    point:"人通りの少ない時間帯を選ぶと落ち着いて伝えられる。構えすぎず、自然体を崩さないこと。" },
+  memory_luxury:{ title:"思い出の場所を貸し切り風に、\n特別な演出で格上げ",
+    catch:"大切な場所を、特別な舞台に変えて。",
+    scene:"ふたりの思い出の場所（レストランやカフェ、ホテルのラウンジなど）を、可能なら個室や貸切で予約。花・キャンドル・プロの撮影を手配し、思い出の場所を一段格上げした特別な空間に。そこで指輪を差し出します。",
+    gift:"上質な婚約指輪＋装飾＋記念撮影。",
+    timing:"記念日など、意味のある日に。",
+    words:"「ここは、僕らの大切な場所。今日、ここを一生の場所にしたい。結婚してください。」",
+    point:"貸切や装飾が可能な場所か事前確認。撮影者を手配すると思い出が形に残ります。" },
+  memory_quiet:{ title:"思い出の場所で、\n手紙にあの頃の想いを込めて",
+    catch:"ふたりだけが知る場所で、静かに。",
+    scene:"人の少ない時間に、思い出の場所へ。ベンチに座り「ここで読みたかった」と手紙を取り出す。出会った頃からの想いを綴った手紙を読み、最後にそっと指輪を。場所と手紙が、想いを何倍にも深くします。",
+    gift:"手書きの手紙＋婚約指輪。",
+    timing:"人が少ない時間帯（平日や早朝）に。",
+    words:"（手紙で）「初めてここで話した日のこと、今でも覚えてる。これからも、ずっとそばにいてください。」",
+    point:"手紙にその場所の思い出を具体的に書き込むと、ぐっと深みが増します。静かな時間帯を狙って。" },
+
+  // ===== 🌌 絶景・自然 =====
+  nature_royal:{ title:"夕日の丘で、\n沈む太陽を背にプロポーズ",
+    catch:"大自然を味方に、王道の告白を。",
+    scene:"夕日が美しい丘や海岸。空がオレンジに染まる瞬間、彼女の前でひざまずき指輪を差し出す。大自然の絶景と王道のプロポーズが重なる、絵に描いたようなクライマックスです。",
+    gift:"婚約指輪。",
+    timing:"日の入り時刻に合わせて。逆算して到着を。",
+    words:"「この夕日みたいに、君との毎日をあたたかく照らしていきたい。結婚してください。」",
+    point:"日没時刻と天気を必ず確認。足場の悪い場所もあるので下見を。寒さ対策も忘れずに。" },
+  nature_surprise:{ title:"星空の下、\n突然のキャンドルと指輪のサプライズ",
+    catch:"満天の星に、思いがけない演出を。",
+    scene:"星のきれいな高原やキャンプ場へ「星を見に行こう」と誘う。星空に見とれている隙に、地面にLEDキャンドルでハートを作る（協力者がいれば理想）。「ねえ、下見て」で振り向くと、光の中で指輪を持って待っている。",
+    gift:"婚約指輪＋キャンドル/LEDの演出。",
+    timing:"新月前後の晴れた夜（星がよく見える）。",
+    words:"「あの星より、君と過ごす毎日のほうがずっと輝いてる。結婚してください。」",
+    point:"火気が使える場所か確認（安全なLED推奨）。協力者がいると演出がスムーズ。防寒は必須。" },
+  nature_cozy:{ title:"ピクニックの途中で、\n青空の下さらりと",
+    catch:"のんびりした自然の中で、ふたりらしく。",
+    scene:"天気のいい日に公園や河原へピクニック。レジャーシートでお弁当を広げ、のんびりした時間の中で「こういう時間、ずっと続けたいな。……結婚しよ」と自然に指輪を出す。青空と開放感が、肩の力を抜いてくれます。",
+    gift:"婚約指輪。手作りのお弁当やお気に入りのおやつとともに。",
+    timing:"天気のいい休日の昼下がり。",
+    words:"「こうやって君とのんびりする時間が、いちばん幸せなんだ。これからもずっと。結婚しよう。」",
+    point:"天気予報を確認。人の少ない場所・時間を選ぶと落ち着いて切り出せます。" },
+  nature_luxury:{ title:"サンセットクルーズや絶景レストランで、\n贅沢な絶景プロポーズ",
+    catch:"最高の絶景を、特別な形で。",
+    scene:"絶景が見える高台のレストラン、あるいはサンセットクルーズなど、贅沢な手段で絶景を堪能。非日常の頂点で、シャンパンや花とともに指輪を差し出す。一生語れるスケールの演出です。",
+    gift:"上質な婚約指輪＋花束＋特別な体験（クルーズ等）。",
+    timing:"記念日や特別な日。体験予約は早めに。",
+    words:"「最高の景色を、最高の人と。これからの人生も、君と特別にしていきたい。結婚してください。」",
+    point:"体験系は予約・天候・酔い対策を。サプライズなら理由をつけて当日まで内緒に。" },
+  nature_quiet:{ title:"朝もやの湖畔で、\nふたりきりの静かな誓い",
+    catch:"誰もいない自然の中で、そっと。",
+    scene:"早朝の湖畔や森の中など、人のいない静謐な場所へ。鳥の声と風の音だけの中、「ずっと、こういう静かな時間を君と過ごしたい」と多くを語らず指輪を差し出す。自然の静けさが、言葉の代わりに想いを伝えます。",
+    gift:"婚約指輪。あたたかい飲み物を魔法瓶で持参する気遣いを。",
+    timing:"早朝など、人の少ない時間帯。",
+    words:"「うまく言えないけど……この静けさの中で、ずっと君と生きていきたい。結婚してください。」",
+    point:"早起きの口実を前夜に。寒さ・足元・虫よけなどの準備も忘れずに。" },
+
+  // ===== 🥂 ホテル =====
+  hotel_royal:{ title:"夜景の見える部屋で、\n王道のひざまずきプロポーズ",
+    catch:"非日常の部屋で、まっすぐな言葉を。",
+    scene:"夜景の見えるホテル高層階の部屋。窓の外に広がる夜景を背に、彼女の前でひざまずいて指輪を差し出す。生活感のない特別な空間が、王道のプロポーズをドラマチックに引き立てます。",
+    gift:"婚約指輪。",
+    timing:"記念日や特別な日。夜景の見える部屋を予約。",
+    words:"「この夜景みたいにきれいな毎日を、君と作っていきたい。結婚してください。」",
+    point:"夜景側の高層階をリクエスト。指輪はチェックイン時から肌身離さず。" },
+  hotel_surprise:{ title:"部屋に入ったら花だらけ、\nホテルのサプライズ演出",
+    catch:"ドアを開けた瞬間、息をのむ光景を。",
+    scene:"ホテルのプロポーズプランを利用。彼女が部屋に入ると、ベッドや床が花びら・バルーン・キャンドルで埋め尽くされている。「なにこれ!?」と驚く彼女に、奥から指輪を持って歩み寄る。プロの仕事で、完璧な演出に。",
+    gift:"婚約指輪＋ホテルの装飾＋ケーキやシャンパン。",
+    timing:"記念日や誕生日。プランは早めに予約を。",
+    words:"「驚いた? ……この部屋みたいに、君の毎日を幸せでいっぱいにしたい。結婚してください。」",
+    point:"ホテルのプロポーズプランは内容・料金を比較して。彼女を先に部屋へ入れる段取りを工夫。" },
+  hotel_cozy:{ title:"のんびりホテルステイの夜に、\nさらっと指輪",
+    catch:"くつろいだ非日常に、ふたりらしく。",
+    scene:"特別な演出より、ゆったりしたホテルステイ。ルームサービスを楽しみ、リラックスした夜のひととき、「こういう時間、これからもずっと過ごそう。……結婚しよ」と自然に指輪を出す。贅沢だけど気取らない、ふたりらしい夜。",
+    gift:"婚約指輪。ルームサービスのスイーツやスパークリングとともに。",
+    timing:"ホテルでのんびり過ごす夜の、リラックスした瞬間。",
+    words:"「君とこうしてのんびりする時間が、最高に幸せなんだ。これからもずっと一緒に。結婚しよう。」",
+    point:"構えすぎず自然体で。リラックスできる雰囲気のホテル・部屋を選ぶと切り出しやすい。" },
+  hotel_luxury:{ title:"スイートルームで、\nシャンパンと夜景の贅沢プロポーズ",
+    catch:"一生に一度を、最高の贅沢で。",
+    scene:"高級ホテルのスイートルーム。シャンパンで乾杯し、夜景を望むソファで、プロのカメラマン（or 設置カメラ）が見守る中、指輪を差し出す。花・ケーキ・シャンパン——すべてが最上級の、映画のような一夜です。",
+    gift:"最上級の婚約指輪＋ブーケ＋シャンパン＋記念撮影。",
+    timing:"記念日やクリスマスなど。スイートは早期予約を。",
+    words:"「最高の夜景も、この贅沢な夜も、これからの人生も。ぜんぶ君と。結婚してください。」",
+    point:"ホテルのプロポーズ・記念日プランをフル活用。撮影手配で一生の記録に。ドレスアップの口実を用意。" },
+  hotel_quiet:{ title:"夜景を望む静かな部屋で、\n手紙を読んで",
+    catch:"ふたりだけの静かな夜に、想いを言葉に。",
+    scene:"夜景の見えるホテルの部屋。明かりを落とし、夜景だけが光る静かな空間で、「読みたい手紙があるんだ」と手紙を取り出す。読み終えて、そっと指輪を差し出す。喧騒から離れた非日常の静けさが、想いを深く伝えます。",
+    gift:"手書きの手紙＋婚約指輪。",
+    timing:"チェックイン後の、落ち着いた夜の時間。",
+    words:"（手紙で）「普段は照れて言えないけど……この夜景みたいに穏やかな毎日を、君と。これからも、そばにいてください。」",
+    point:"手紙は事前に準備し練習を。部屋の照明を落として夜景を活かすと雰囲気が出ます。" },
+};
+
+/* =========================================================
+   ロジック
+   ========================================================= */
+let cur = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+const scores = {};   // 舞台(WHERE)の得点
+const hscores = {};  // 演出トーン(HOW)の得点
+
+const $ = id => document.getElementById(id);
+document.getElementById('qTotal').textContent = QUESTIONS.length;
+$('lineCta').href = CONFIG.lineUrl;
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function start(){ cur=0; show('quiz'); render(); }
+
+function render(){
+  const Q = QUESTIONS[cur];
+  $('qNow').textContent = cur+1;
+  $('bar').style.width = ((cur)/QUESTIONS.length*100)+'%';
+  $('qText').textContent = Q.q;
+  const box = $('opts'); box.innerHTML='';
+  Q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'+(answers[cur]===i?' sel':'');
+    b.innerHTML = `<span class="em">${o.em}</span>${o.t}`;
+    b.onclick = ()=>choose(i);
+    box.appendChild(b);
+  });
+  $('backBtn').disabled = (cur===0);
+}
+
+function choose(i){
+  answers[cur]=i;
+  // 選択の見た目を反映
+  document.querySelectorAll('#opts .opt').forEach((el,idx)=>el.classList.toggle('sel',idx===i));
+  // 少し余韻をもたせて次へ
+  setTimeout(()=>{
+    if(cur < QUESTIONS.length-1){ cur++; render(); }
+    else finish();
+  }, 280);
+}
+
+function back(){ if(cur>0){ cur--; render(); } }
+
+function finish(){
+  $('bar').style.width='100%';
+  show('loading');
+  // 集計（舞台と演出トーン、両方）
+  for(const k in WHERE) scores[k]=0;
+  for(const k in HOW) hscores[k]=0;
+  answers.forEach((ai,qi)=>{
+    if(ai===null) return;
+    const o = QUESTIONS[qi].opts[ai];
+    for(const k in o.score) scores[k]=(scores[k]||0)+o.score[k];
+    if(o.how) for(const k in o.how) hscores[k]=(hscores[k]||0)+o.how[k];
+  });
+  const msgs=["彼女の気持ちを、読み解いています…","彼女の喜ぶ顔を、想像しています…","彼女にぴったりのプランを、選んでいます…"];
+  let mi=0; const timer=setInterval(()=>{ mi=(mi+1)%msgs.length; $('loadMsg').textContent=msgs[mi]; },800);
+  setTimeout(()=>{ clearInterval(timer); showResult(); }, 2400);
+}
+
+/* =========================================================
+   結果イラスト（SVG）＝ 場所6種の絵 × トーン5種の色 でリンク
+   ========================================================= */
+const TONE_PAL = {
+  royal:   { sky:'#f3e7e0', sky2:'#e7cdbf', sun:'#e8b298', accent:'#b98a78', deep:'#9c6a58', star:'#caa57e' },
+  surprise:{ sky:'#fde7ea', sky2:'#f7c9d2', sun:'#f4a0a8', accent:'#e87f8c', deep:'#c45d6a', star:'#f3b6c0' },
+  cozy:    { sky:'#fbeede', sky2:'#f2dcc0', sun:'#f0c285', accent:'#cf9a5e', deep:'#a9763e', star:'#e3c08a' },
+  luxury:  { sky:'#efe9f3', sky2:'#ddcfe7', sun:'#d9c08a', accent:'#9c7bb0', deep:'#785a98', star:'#c2a878' },
+  quiet:   { sky:'#e9edf4', sky2:'#d4dbe8', sun:'#b9c6dc', accent:'#8a9bc0', deep:'#5f6f90', star:'#aebccf' },
+};
+
+function svgScene(wkey, hkey){
+  const p = TONE_PAL[hkey] || TONE_PAL.royal;
+  const W=320, H=150;
+  const heart=(x,y,s,c)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 2.5 C0 -1.2 -5 -1.2 -5 1.8 C-5 5 0 7.5 0 9 C0 7.5 5 5 5 1.8 C5 -1.2 0 -1.2 0 2.5 Z" fill="${c}"/>`;
+  const couple=(cx,by,c)=>`<g fill="${c}">`+
+    `<circle cx="${cx-8}" cy="${by-23}" r="6.5"/><path d="M${cx-15} ${by} L${cx-12.5} ${by-15} Q${cx-8} ${by-19} ${cx-3.5} ${by-15} L${cx-1} ${by} Z"/>`+
+    `<circle cx="${cx+8}" cy="${by-21}" r="6"/><path d="M${cx+2} ${by} L${cx+4} ${by-14} Q${cx+8} ${by-17.5} ${cx+12} ${by-14} L${cx+14} ${by} Z"/></g>`;
+  let fl='';
+  if(hkey==='surprise'){ const a=[[36,28],[92,20],[150,16],[214,22],[276,30],[120,40],[250,44],[64,46]]; a.forEach((q,i)=>fl+=`<circle cx="${q[0]}" cy="${q[1]}" r="2.5" fill="${i%2?p.accent:p.star}"/>`); }
+  else if(hkey==='luxury'){ [[48,26],[262,22],[150,15],[292,54],[30,60]].forEach(q=>fl+=`<g transform="translate(${q[0]} ${q[1]})" fill="${p.star}"><path d="M0 -5 L1.3 -1.3 L5 0 L1.3 1.3 L0 5 L-1.3 1.3 L-5 0 L-1.3 -1.3 Z"/></g>`); }
+  else if(hkey==='quiet'){ [[40,24],[82,38],[132,20],[200,28],[250,42],[292,26],[168,46]].forEach(q=>fl+=`<circle cx="${q[0]}" cy="${q[1]}" r="1.6" fill="${p.star}"/>`); }
+  else if(hkey==='royal'){ [[44,28],[150,18],[270,26]].forEach(q=>fl+=heart(q[0],q[1],0.9,p.star)); }
+  else if(hkey==='cozy'){ [[150,20],[260,30]].forEach(q=>fl+=heart(q[0],q[1],0.9,p.star)); }
+
+  let s='';
+  if(wkey==='resto'){
+    s+=`<g fill="${p.deep}" opacity=".8"><rect x="14" y="64" width="24" height="64"/><rect x="40" y="48" width="20" height="80"/><rect x="62" y="74" width="20" height="54"/><rect x="238" y="56" width="20" height="72"/><rect x="262" y="70" width="18" height="58"/><rect x="282" y="46" width="22" height="82"/></g>`;
+    s+=`<g fill="${p.star}">`; for(let i=0;i<8;i++){ s+=`<rect x="${44+(i%2)*7}" y="${56+Math.floor(i/2)*10}" width="3" height="3"/>`; } s+=`</g>`;
+    s+=`<rect x="0" y="128" width="${W}" height="22" fill="${p.accent}" opacity=".25"/>`;
+    s+=`<g stroke="${p.deep}" stroke-width="2"><path d="M118 112 l5 9 l-10 0 z" fill="${p.sun}" stroke="none"/><line x1="118" y1="121" x2="118" y2="129"/><line x1="112" y1="129" x2="124" y2="129"/><path d="M202 112 l5 9 l-10 0 z" fill="${p.sun}" stroke="none"/><line x1="202" y1="121" x2="202" y2="129"/><line x1="196" y1="129" x2="208" y2="129"/></g>`;
+    s+=couple(160,128,p.deep)+heart(160,100,1.5,p.accent);
+  } else if(wkey==='home'){
+    s+=`<rect x="0" y="128" width="${W}" height="22" fill="${p.accent}" opacity=".22"/>`;
+    s+=`<rect x="96" y="76" width="128" height="52" fill="${p.sky}" stroke="${p.accent}" stroke-width="2.5"/>`;
+    s+=`<path d="M88 76 L160 40 L232 76 Z" fill="${p.accent}"/>`;
+    s+=`<rect x="150" y="96" width="20" height="32" fill="${p.deep}"/>`;
+    s+=`<rect x="110" y="90" width="22" height="20" fill="none" stroke="${p.deep}" stroke-width="2"/>`;
+    s+=heart(205,98,1.3,p.sun)+couple(160,128,p.deep)+heart(160,108,1.1,p.accent);
+  } else if(wkey==='travel'){
+    s+=`<circle cx="252" cy="50" r="26" fill="${p.sun}"/>`;
+    s+=`<rect x="0" y="104" width="${W}" height="46" fill="${p.accent}" opacity=".25"/>`;
+    s+=`<path d="M0 104 q40 -8 80 0 t80 0 t80 0 t80 0" fill="none" stroke="${p.star}" stroke-width="2" opacity=".6"/>`;
+    s+=`<path d="M58 52 L104 60 L94 46 L102 47 L116 58 L128 59 L124 65 L110 66 L98 80 L93 79 L98 64 L58 60 Z" fill="${p.deep}"/>`;
+    s+=`<path d="M24 70 q22 -7 40 -12" stroke="${p.star}" stroke-width="2" fill="none" stroke-dasharray="3 5"/>`;
+    s+=couple(160,128,p.deep)+heart(160,102,1.4,p.accent);
+  } else if(wkey==='memory'){
+    s+=`<rect x="0" y="128" width="${W}" height="22" fill="${p.accent}" opacity=".22"/>`;
+    s+=`<rect x="66" y="64" width="10" height="60" fill="${p.deep}"/><circle cx="71" cy="56" r="30" fill="${p.accent}" opacity=".7"/><circle cx="92" cy="64" r="20" fill="${p.accent}" opacity=".55"/>`;
+    s+=`<g fill="${p.deep}"><rect x="120" y="108" width="84" height="6"/><rect x="120" y="96" width="84" height="5"/><rect x="122" y="114" width="6" height="16"/><rect x="196" y="114" width="6" height="16"/></g>`;
+    s+=heart(250,70,1.1,p.sun)+heart(232,92,0.8,p.star)+couple(162,128,p.deep)+heart(162,108,1.1,p.accent);
+  } else if(wkey==='nature'){
+    s+=`<circle cx="160" cy="74" r="30" fill="${p.sun}"/>`;
+    s+=`<path d="M0 128 L60 78 L110 112 L168 66 L226 116 L290 84 L320 104 L320 128 Z" fill="${p.deep}" opacity=".5"/>`;
+    s+=`<path d="M0 128 L80 96 L150 120 L230 92 L320 118 L320 150 L0 150 Z" fill="${p.accent}" opacity=".4"/>`;
+    s+=couple(160,130,p.deep)+heart(160,104,1.3,p.accent);
+  } else { // hotel
+    s+=`<g fill="${p.deep}" opacity=".8"><rect x="54" y="40" width="42" height="90"/><rect x="224" y="52" width="42" height="78"/></g>`;
+    s+=`<g fill="${p.star}">`; for(let i=0;i<12;i++){ s+=`<rect x="${60+(i%3)*12}" y="${48+Math.floor(i/3)*16}" width="4" height="4"/>`; } s+=`</g>`;
+    s+=`<rect x="0" y="128" width="${W}" height="22" fill="${p.accent}" opacity=".25"/>`;
+    s+=`<g stroke="${p.deep}" stroke-width="1.8"><path d="M146 96 L150 112 L142 112 Z" fill="${p.sun}" stroke="none"/><line x1="146" y1="112" x2="146" y2="126"/><path d="M174 96 L178 112 L170 112 Z" fill="${p.sun}" stroke="none"/><line x1="174" y1="112" x2="174" y2="126"/></g>`;
+    s+=heart(160,84,1.4,p.accent)+couple(160,144,p.deep);
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">`+
+    `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p.sky}"/><stop offset="1" stop-color="${p.sky2}"/></linearGradient></defs>`+
+    `<rect width="${W}" height="${H}" fill="url(#sk)"/>`+fl+s+`</svg>`;
+}
+
+// 同点のときは偏らないようランダムに選ぶ
+function pickTop(scoreObj, keys){
+  let max=-1;
+  keys.forEach(k=>{ if((scoreObj[k]||0)>max) max=scoreObj[k]||0; });
+  const top=keys.filter(k=>(scoreObj[k]||0)===max);
+  return top[Math.floor(Math.random()*top.length)];
+}
+
+function showResult(){
+  // 舞台(WHERE)と演出トーン(HOW)をそれぞれ選び、30通りの具体プランから1つを表示
+  const wkey = pickTop(scores, ["resto","home","travel","memory","nature","hotel"]);
+  const hkey = pickTop(hscores, ["royal","surprise","cozy","luxury","quiet"]);
+  const W = WHERE[wkey], H = HOW[hkey];
+  const P = PLANS30[wkey + "_" + hkey];
+
+  $('rIllust').innerHTML = svgScene(wkey, hkey);
+  $('rEmoji').textContent = "";
+  $('rType').textContent = H.label + "  ×  " + W.label;
+  $('rTitle').innerHTML = P.title.replace(/\n/g,'<br>');
+  $('rCatch').innerHTML = P.catch.replace(/\n/g,'<br>');
+  $('rScene').textContent = P.scene;
+  $('rGift').textContent = P.gift;
+  $('rTiming').textContent = P.timing;
+  $('rWords').textContent = P.words;
+  $('rPoint').textContent = P.point;
+  window._resultTitle = P.title.replace(/\n/g,'');
+  window._res = { wkey, hkey, W, H };       // AI生成で使う診断コンテキスト
+  // AI出力をリセット
+  $('aiResult').style.display='none';
+  $('aiText').textContent='';
+  $('aiActions').style.display='none';
+  show('result');
+}
+
+function restart(){
+  cur=0; answers.fill(null);
+  show('start');
+}
+
+async function shareResult(){
+  const text = `彼女にぴったりのプロポーズは「${window._resultTitle||''}」でした！\n${CONFIG.shareTitle}`;
+  const url = location.href;
+  if(navigator.share){
+    try{ await navigator.share({title:CONFIG.shareTitle,text,url}); }catch(e){}
+  }else{
+    try{
+      await navigator.clipboard.writeText(text+"\n"+url);
+      alert("結果をコピーしました。SNSに貼り付けてシェアできます。");
+    }catch(e){ alert(text); }
+  }
+}
+
+/* =========================================================
+   AI：世界にひとつのプロポーズの言葉を生成
+   ========================================================= */
+async function createWords(){
+  const res = window._res;
+  if(!res){ return; }
+  const name = ($('aiName').value||'').trim();
+  const episode = ($('aiEpisode').value||'').trim();
+  const charm = ($('aiCharm').value||'').trim();
+
+  // 表示準備
+  $('aiResult').style.display='block';
+  $('aiLoading').style.display='flex';
+  $('aiText').textContent='';
+  $('aiActions').style.display='none';
+  $('aiBtn').disabled=true;
+  $('aiResult').scrollIntoView({behavior:'smooth',block:'center'});
+
+  const callName = name ? `「${name}」` : 'パートナー';
+  const system = "あなたは日本一のプロポーズプロデューサーです。男性が女性パートナーに伝える『プロポーズの言葉』を、心に響く自然な日本語で作ります。"
+    + "出力はプロポーズの言葉の本文のみ。前置き・解説・カギカッコ・絵文字は付けないこと。"
+    + "2〜4文、日本語で120〜200字程度。重すぎず気取りすぎず、本人が実際に声に出して言える、まっすぐで温かい言葉にすること。"
+    + "最後は必ず結婚を申し込む一文で締めること。";
+  const userMsg =
+    `次の条件で、プロポーズの言葉を1つ考えてください。\n`+
+    `・呼びかける相手: ${callName}\n`+
+    `・演出のトーン: ${res.H.adj}（${res.H.label}）\n`+
+    `・シチュエーション(舞台): ${res.W.noun}\n`+
+    (episode ? `・ふたりの思い出: ${episode}\n` : '')+
+    (charm ? `・彼女の好きなところ: ${charm}\n` : '')+
+    `トーンと舞台の雰囲気を活かし、${callName}への呼びかけから自然に始めてください。`;
+
+  try{
+    const r = await fetch(CONFIG.apiEndpoint, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ system, messages:[{role:'user',content:userMsg}] })
+    });
+    const data = await r.json();
+    const text = data && data.content && data.content[0] && data.content[0].text;
+    if(!r.ok || !text){
+      throw new Error((data && (data.error && (data.error.message||data.error))) || 'AIの応答が取得できませんでした');
+    }
+    $('aiText').textContent = text.trim();
+    $('aiActions').style.display='flex';
+  }catch(e){
+    $('aiText').textContent = "ごめんなさい、ただいま言葉をうまく作れませんでした。少し時間をおいて、もう一度お試しください。\n（AI機能を使うには、Netlifyへの関数デプロイとAPIキー設定が必要です）";
+  }finally{
+    $('aiLoading').style.display='none';
+    $('aiBtn').disabled=false;
+  }
+}
+
+async function copyWords(){
+  const t = $('aiText').textContent||'';
+  try{ await navigator.clipboard.writeText(t); alert("プロポーズの言葉をコピーしました。"); }
+  catch(e){ alert(t); }
+}
+
+/* 花びらの装飾 */
+(function(){
+  const emojis=["🌸","🌷","🌹","💗"];
+  for(let i=0;i<9;i++){
+    const s=document.createElement('div');
+    s.className='petal';
+    s.textContent=emojis[i%emojis.length];
+    s.style.left=(Math.random()*100)+'%';
+    s.style.animationDuration=(9+Math.random()*8)+'s';
+    s.style.animationDelay=(Math.random()*8)+'s';
+    s.style.fontSize=(13+Math.random()*12)+'px';
+    document.body.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>

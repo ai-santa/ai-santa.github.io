@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AI口コミ 提案LP（縦スワイプ型）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   デザイントークン（ここを変えるだけで色・雰囲気が変わる＝テンプレの心臓部）
+   ========================================================= */
+:root{
+  --brand:#2f9bd6; --brand-deep:#1f6f9e;
+  --cta:#1aa54b; --cta-press:#15863d;
+  --ink:#1a1a1a; --ink-soft:#555;
+  --bg-page:#e9edf1; --bg-card:#ffffff;
+  --slide-bg:linear-gradient(160deg,#eaf4fb 0%,#ffffff 55%,#f3f8fc 100%);
+  --gold:#f5a623;
+  --serif:"Shippori Mincho","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New",system-ui,sans-serif;
+  --frame-w:430px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg-page);
+  display:flex;justify-content:center;}
+
+/* 縦スワイプ・デッキ（ビューポート＝1画面） */
+.frame{position:relative;width:100%;max-width:var(--frame-w);height:100dvh;
+  background:var(--bg-card);overflow:hidden;box-shadow:0 0 60px rgba(20,40,70,.16);}
+.track{will-change:transform;transition:transform .55s cubic-bezier(.33,0,.2,1);}
+
+/* 1スライド＝1画面ぶん */
+.slide{
+  height:100dvh;background:var(--slide-bg);position:relative;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:46px 32px 96px;text-align:center;overflow:hidden;
+}
+.slide .eyebrow{font-weight:500;letter-spacing:.28em;font-size:12px;color:var(--brand-deep);text-transform:uppercase;margin-bottom:20px;}
+.slide h2{font-family:var(--serif);font-weight:700;font-size:clamp(23px,6.4vw,30px);line-height:1.5;letter-spacing:.02em;margin-bottom:18px;}
+.slide h2 .accent{color:var(--brand);}
+.slide p{font-size:16px;line-height:1.95;color:var(--ink-soft);}
+.slide .en{font-weight:400;letter-spacing:.2em;font-size:11px;color:var(--ink-soft);text-transform:uppercase;margin-top:22px;}
+
+/* 背景写真スライド（役割別に処理を変える） */
+.slide.hero{background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.93) 34%,rgba(255,255,255,.95) 60%,rgba(255,255,255,.62) 100%),url('top-bg.webp') center 22%/cover no-repeat;}
+.slide.reassure{background:linear-gradient(180deg,rgba(255,255,255,.48) 0%,rgba(255,255,255,.86) 34%,rgba(255,255,255,.88) 66%,rgba(255,255,255,.64) 100%),url('reassure-support.webp') center 30%/cover no-repeat;}
+.slide.reassure .merit-list li{background:rgba(255,255,255,.78);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:0 6px 18px rgba(30,60,90,.12);}
+.slide.result{background:linear-gradient(180deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.90) 38%,rgba(255,255,255,.92) 64%,rgba(255,255,255,.74) 100%),url('result-owner.webp') center 22%/cover no-repeat;}
+.slide.result .ba .card{box-shadow:0 8px 22px rgba(30,60,90,.18);}
+.slide.result .ba .card.after{box-shadow:0 10px 28px rgba(47,155,214,.30);}
+.slide.problem{background:linear-gradient(180deg,rgba(8,14,26,.55) 0%,rgba(8,14,26,.50) 40%,rgba(8,14,26,.80) 100%),url('problem-owner.webp') center 28%/cover no-repeat;}
+.slide.problem .eyebrow{color:#bcd8ef;}
+.slide.problem h2{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.5);}
+.slide.problem h2 .accent{color:#7ec8f5;}
+.slide.problem .pain-list li{background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.22);box-shadow:0 6px 18px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.slide.problem .pain-list li::before{background:#7ec8f5;opacity:1;}
+
+/* 丸バッジ */
+.badge-round{width:92px;height:92px;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:32px;color:#fff;background:linear-gradient(140deg,var(--brand),var(--brand-deep));box-shadow:0 12px 26px rgba(47,155,214,.35);}
+
+/* お悩み／安心リスト */
+.pain-list{list-style:none;text-align:left;margin:8px auto 0;max-width:310px;}
+.pain-list li{font-size:15.5px;line-height:1.6;color:var(--ink);padding:13px 14px 13px 42px;margin-bottom:10px;background:#fff;border-radius:12px;position:relative;box-shadow:0 3px 10px rgba(30,60,90,.07);}
+.pain-list li::before{content:"";position:absolute;left:15px;top:50%;transform:translateY(-50%);width:14px;height:14px;border-radius:50%;background:var(--brand);opacity:.9;}
+.merit-list li{font-size:14px;line-height:1.5;padding-top:11px;padding-bottom:11px;}
+.merit-list li::before{content:"\2713";background:none;color:var(--cta);font-weight:700;font-size:18px;width:auto;height:auto;left:14px;top:18px;transform:none;}
+
+/* 3ステップ */
+.steps{text-align:left;max-width:320px;margin:6px auto 0;}
+.step{display:flex;gap:14px;position:relative;padding-bottom:20px;}
+.step:not(:last-child)::before{content:"";position:absolute;left:18px;top:38px;bottom:2px;width:2px;background:linear-gradient(var(--brand),rgba(47,155,214,.15));}
+.step .n{flex:0 0 38px;width:38px;height:38px;border-radius:50%;z-index:1;background:linear-gradient(140deg,var(--brand),var(--brand-deep));color:#fff;font-family:var(--serif);font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.step .t b{display:block;font-size:15.5px;font-weight:700;margin-bottom:3px;}
+.step .t span{font-size:13px;color:var(--ink-soft);line-height:1.55;}
+
+/* Before/After */
+.ba{display:flex;align-items:stretch;gap:8px;justify-content:center;margin-top:6px;}
+.ba .card{flex:1;background:#fff;border-radius:14px;padding:16px 10px;text-align:center;box-shadow:0 4px 12px rgba(30,60,90,.08);}
+.ba .card.after{box-shadow:0 8px 22px rgba(47,155,214,.22);border:1.5px solid var(--brand);}
+.ba .ttl{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:10px;}
+.ba .card.after .ttl{color:var(--brand-deep);}
+.ba .row{font-size:12px;color:var(--ink);margin:9px 0;line-height:1.3;}
+.ba .row b{display:block;font-family:var(--serif);font-size:21px;color:var(--brand-deep);margin-top:2px;}
+.ba .card:not(.after) .row b{color:#9aa3ab;}
+.ba .mid{display:flex;align-items:center;color:var(--brand);font-size:22px;font-weight:700;}
+.stars{font-size:13px;letter-spacing:1.5px;line-height:1;}
+.stars .on{color:var(--gold);} .stars .off{color:#dadada;}
+
+/* お客様の声 */
+.voice{background:#fff;border-radius:16px;padding:22px 20px;text-align:left;max-width:332px;margin:4px auto 0;box-shadow:0 6px 18px rgba(30,60,90,.1);}
+.voice .stars{margin-bottom:11px;font-size:15px;}
+.voice q{display:block;font-size:14.5px;line-height:1.85;color:var(--ink);quotes:none;}
+.voice .who{display:flex;align-items:center;gap:11px;margin-top:15px;}
+.voice .av{flex:0 0 40px;width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,var(--brand),var(--brand-deep));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--serif);}
+.voice .who b{display:block;font-size:13px;} .voice .who span{font-size:11px;color:var(--ink-soft);}
+
+/* 数字実績 */
+.stat-grid{display:flex;justify-content:center;align-items:flex-start;gap:30px;margin:10px 0 4px;}
+.stat-grid .stat{display:flex;flex-direction:column;}
+.stat-grid .stat b{font-family:var(--serif);font-weight:700;font-size:66px;line-height:.95;color:var(--brand-deep);background:linear-gradient(150deg,var(--brand),var(--brand-deep));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-grid .stat b small{font-size:25px;-webkit-text-fill-color:var(--brand-deep);}
+.stat-grid .stat span{font-size:12px;font-weight:500;color:var(--ink-soft);margin-top:10px;letter-spacing:.05em;}
+.stat-note{font-size:10.5px;color:#9aa3ab;margin-top:16px;letter-spacing:.03em;line-height:1.6;}
+
+/* Google口コミ風モック */
+.gmock{background:#fff;border-radius:14px;padding:14px 14px 12px;max-width:310px;margin:8px auto 0;box-shadow:0 6px 18px rgba(30,60,90,.12);text-align:left;}
+.gmock .gh{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.gmock .gav{width:30px;height:30px;border-radius:50%;background:#e76f51;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+.gmock .gn b{font-size:12.5px;} .gmock .gn .stars{font-size:12px;margin-top:2px;}
+.gmock p{font-size:12.5px;line-height:1.7;color:#333;}
+.gmock .gg{font-size:10px;color:#888;margin-top:6px;}
+
+/* オファー帯（最終スライドに内蔵） */
+.offer{margin-top:22px;text-align:center;}
+.offer-head{font-weight:500;font-size:14px;color:var(--ink);margin-bottom:8px;}
+.offer-head{display:flex;align-items:baseline;justify-content:center;gap:6px;}
+.offer-head b{color:var(--brand);font-weight:900;font-size:34px;line-height:1;}
+.offer-price{display:flex;align-items:baseline;justify-content:center;gap:12px;}
+.offer-price .was{font-size:17px;font-weight:500;color:var(--ink-soft);text-decoration:line-through;text-decoration-color:#d24a4a;}
+.offer-price .now{font-family:var(--serif);font-weight:700;color:var(--ink);line-height:1;display:flex;align-items:baseline;}
+.offer-price .now b{font-size:50px;}
+.offer-price .now small{font-size:16px;font-weight:500;}
+.offer-foot{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.offer-foot span{font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;letter-spacing:.05em;}
+.offer-foot .forever{color:#fff;background:var(--cta);}
+.offer-foot .limited{color:#fff;background:#e8743b;}
+.offer-foot .tax{color:var(--brand-deep);background:#e7f2fa;}
+
+/* 縦ドット（右・現在地） */
+.vdots{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:45;}
+.vdots button{width:8px;height:8px;border-radius:50%;border:none;padding:0;cursor:pointer;background:rgba(31,111,158,.3);transition:all .25s;}
+.vdots button.active{background:var(--brand);height:22px;border-radius:5px;}
+
+/* スワイプ案内（1枚目のみ） */
+.vhint{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);z-index:30;color:var(--brand-deep);font-size:11px;letter-spacing:.2em;text-align:center;transition:opacity .3s;pointer-events:none;}
+.vhint .ch{display:block;font-size:20px;margin-top:2px;animation:bob 1.5s infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+
+/* 固定CTA（常に表示） */
+.cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px calc(16px + env(safe-area-inset-bottom));z-index:40;pointer-events:none;background:linear-gradient(to top,rgba(255,255,255,.94),rgba(255,255,255,0));}
+.cta{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:20px;border:none;border-radius:46px;cursor:pointer;background:var(--cta);color:#fff;font-weight:700;font-size:18px;letter-spacing:.02em;box-shadow:0 10px 24px rgba(26,165,75,.4);transition:transform .12s,background .2s;font-family:var(--sans);}
+.cta:hover{background:var(--cta-press);} .cta:active{transform:translateY(2px);}
+.cta .ar{font-size:18px;}
+
+@media (max-width:430px){ .frame{box-shadow:none;} }
+@media (max-width:360px){ .slide{padding-left:22px;padding-right:22px;} .pain-list li{font-size:14.5px;} }
+</style>
+</head>
+<body>
+
+<main class="frame" id="frame">
+  <div class="track" id="track">
+
+    <!-- 1. 表紙 -->
+    <article class="slide hero">
+      <div class="eyebrow">AI Review Support</div>
+      <h2>いいお店なのに、<br><span class="accent">口コミが少ない</span>だけ。</h2>
+      <p>新規のお客様の約8割が、来店前に<br>Googleのクチコミを見ています。</p>
+      <div class="en">For your local business</div>
+    </article>
+
+    <!-- 2. お悩み -->
+    <article class="slide problem">
+      <div class="eyebrow">Problem</div>
+      <h2>こんな<span class="accent">お悩み</span>、<br>ありませんか？</h2>
+      <p style="color:rgba(255,255,255,.92);font-size:14px;margin-bottom:14px;">また今月も、口コミは増えなかった——。</p>
+      <ul class="pain-list">
+        <li>口コミが全然集まらない</li>
+        <li>Googleマップで上位に出ない</li>
+        <li>口コミの質が低い</li>
+        <li>低評価・ネガティブ投稿が怖い</li>
+      </ul>
+    </article>
+
+    <!-- 3. 仕組み -->
+    <article class="slide">
+      <div class="eyebrow">How It Works</div>
+      <h2>AI口コミ生成の<br><span class="accent">かんたん3ステップ</span></h2>
+      <p style="font-size:13px;color:var(--brand-deep);font-weight:500;margin:-4px 0 16px;">（トータル1分以内で生成完了）</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="t"><b>QRコードを読み取り<br>アンケートに回答</b><span>お客様はスマホで30秒。アプリ不要。</span></div></div>
+        <div class="step"><div class="n">2</div><div class="t"><b>AIがアンケートをもとに<br>クチコミを生成</b><span>回答内容から、自然な文章を自動で作成。</span></div></div>
+        <div class="step"><div class="n">3</div><div class="t"><b>お客様自身で<br>そのままGoogleマップへ投稿</b><span>内容を確認し、ご本人の操作で投稿。</span></div></div>
+      </div>
+      <p style="font-size:13px;margin-top:14px;color:var(--ink);">良い声が増えるほど、平均評価も、<br>Googleマップでの見つけやすさも上がる。</p>
+    </article>
+
+    <!-- 4. Before→After -->
+    <article class="slide result">
+      <div class="eyebrow">Before &rarr; After</div>
+      <h2>導入で、ここまで<br><span class="accent">変わる</span>。</h2>
+      <div class="ba">
+        <div class="card"><div class="ttl">BEFORE</div><div class="stars"><span class="on">★★★</span><span class="off">★★</span></div><div class="row">平均評価<b>3.2</b></div><div class="row">月の口コミ<b>2件</b></div></div>
+        <div class="mid">&rarr;</div>
+        <div class="card after"><div class="ttl">AFTER</div><div class="stars"><span class="on">★★★★</span><span class="off">★</span></div><div class="row">平均評価<b>4.6</b></div><div class="row">月の口コミ<b>18件</b></div></div>
+      </div>
+      <p style="font-size:13.5px;margin-top:16px;color:var(--ink);font-weight:500;">口コミ1件の差が、新規ご来店の数を変える。</p>
+      <p style="font-size:11.5px;margin-top:8px;color:#9aa3ab;">※導入店舗の一例。効果を保証するものではありません。</p>
+    </article>
+
+    <!-- 5. お客様の声 -->
+    <article class="slide">
+      <div class="eyebrow">Owner's Voice</div>
+      <h2>導入店オーナーの、<br><span class="accent">本音</span>。</h2>
+      <div class="voice">
+        <div class="stars"><span class="on">★★★★★</span></div>
+        <q>お願いするのが申し訳なくて口コミ依頼を諦めていました。これなら自然に増えて、最近は「口コミ見て来ました」というお客様が本当に増えたんです。</q>
+        <div class="who"><div class="av">M</div><div><b>美容室オーナー M様</b><span>導入4か月／福井県</span></div></div>
+      </div>
+      <p style="font-size:11px;margin-top:12px;color:#9aa3ab;">※写真・お名前は本番で差し替え可能です。</p>
+    </article>
+
+    <!-- 6. 数字実績 -->
+    <article class="slide">
+      <div class="eyebrow">Results</div>
+      <h2>導入店舗で、<br><span class="accent">うれしい変化</span>。</h2>
+      <div class="stat-grid">
+        <div class="stat"><b>3.1<small>倍</small></b><span>クチコミ投稿数</span></div>
+        <div class="stat"><b>30<small>秒</small></b><span>クチコミ入力までの所要時間</span></div>
+      </div>
+      <div class="gmock">
+        <div class="gh"><div class="gav">G</div><div class="gn"><b>Google のクチコミ</b><div class="stars"><span class="on">★★★★★</span></div></div></div>
+        <p>スタッフさんの対応が丁寧で、また通いたいお店です。</p>
+        <div class="gg">▲ 実際の投稿イメージ</div>
+      </div>
+      <div class="stat-note">※自社導入店舗の平均値（2026年・n=30）。<br>効果には個人差があります。</div>
+    </article>
+
+    <!-- 7. 安心 -->
+    <article class="slide reassure">
+      <div class="eyebrow">Peace of Mind</div>
+      <h2>だから、<span class="accent">安心</span>して<br>始められる。</h2>
+      <ul class="pain-list merit-list">
+        <li>Google規制に配慮した設計（投稿はご本人）</li>
+        <li>初期費用0円・いつでも修正が可能</li>
+        <li>商品・サービス・Googleマップで見つかるキーワードまで、お店仕様に自由カスタマイズ。内容はいつでも変更OK</li>
+      </ul>
+    </article>
+
+    <!-- 8. 締め＋オファー -->
+    <article class="slide">
+      <div class="eyebrow">See It Yourself</div>
+      <h2>もう、口コミで<br><span class="accent">ひとり</span>悩まない。</h2>
+      <p>まずは画面で、その手軽さをご体感ください。</p>
+      <div class="offer">
+        <div class="offer-head">初期費用 <b>0円</b> スタート</div>
+        <div class="offer-price">
+          <span class="was">通常 月額7,500円</span>
+          <span class="now"><small>月額</small><b>6,500</b><small>円</small></span>
+        </div>
+        <div class="offer-foot"><span class="forever">ずっとこの価格</span><span class="tax">税込</span></div>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="vdots" id="vdots"></div>
+  <div class="vhint" id="vhint">SWIPE<span class="ch">&darr;</span></div>
+
+  <div class="cta-bar">
+    <button class="cta" onclick="location.href='demo/index.html'">うちのお店だと？ 無料デモを見る <span class="ar">&rarr;</span></button>
+  </div>
+</main>
+
+<script>
+/* 縦スワイプ制御：1ジェスチャー＝1スライドだけ動く（ロックで多重発火を無視） */
+(function(){
+  const frame=document.getElementById('frame');
+  const track=document.getElementById('track');
+  const N=track.children.length;
+  const dotsWrap=document.getElementById('vdots');
+  const hint=document.getElementById('vhint');
+  let idx=0, lock=false;
+
+  for(let i=0;i<N;i++){ const b=document.createElement('button'); b.addEventListener('click',()=>go(i)); dotsWrap.appendChild(b); }
+  const dots=dotsWrap.children;
+
+  function apply(){
+    track.style.transform='translateY('+(-idx*frame.clientHeight)+'px)';
+    for(let i=0;i<N;i++) dots[i].classList.toggle('active',i===idx);
+    if(hint) hint.style.opacity = idx===0 ? '1':'0';
+  }
+  function go(n){
+    if(lock) return;
+    n=Math.max(0,Math.min(N-1,n));
+    if(n===idx) return;
+    idx=n; apply();
+    lock=true; setTimeout(()=>{ lock=false; }, 700);   // ←1スワイプ＝1スライドの要
+  }
+
+  // マウス／トラックパッド
+  frame.addEventListener('wheel',function(e){ e.preventDefault(); if(lock) return; if(e.deltaY>8) go(idx+1); else if(e.deltaY<-8) go(idx-1); },{passive:false});
+  // タッチ（スマホ）
+  let sy=null;
+  frame.addEventListener('touchstart',function(e){ sy=e.touches[0].clientY; },{passive:true});
+  frame.addEventListener('touchmove',function(e){ e.preventDefault(); },{passive:false});
+  frame.addEventListener('touchend',function(e){ if(sy===null) return; const dy=e.changedTouches[0].clientY - sy; if(Math.abs(dy)>40){ if(dy<0) go(idx+1); else go(idx-1); } sy=null; },{passive:true});
+  // キーボード
+  window.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); go(idx+1); }
+    if(e.key==='ArrowUp'||e.key==='PageUp'){ e.preventDefault(); go(idx-1); }
+  });
+  window.addEventListener('resize',apply);
+  apply();
+})();
+</script>
+</body>
+</html>
