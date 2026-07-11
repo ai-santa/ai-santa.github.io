@@ -115,6 +115,22 @@
   .link .arw{transition:transform .25s;}
   .card:hover .link.on .arw{transform:translateX(3px);}
 
+  /* Featured cards (イチオシ) */
+  .card.featured{
+    border:2px solid var(--gold-deep);
+    background:linear-gradient(180deg,#fffef9,var(--card));
+    box-shadow:0 18px 40px -26px rgba(138,106,44,.45);
+  }
+  .card.featured::after{border-color:rgba(169,134,63,.22);}
+  .card.featured:hover{box-shadow:0 30px 60px -30px rgba(138,106,44,.55);}
+  .card.featured .no{color:var(--gold-deep);}
+  .card.featured .ribbon{
+    position:absolute;top:-1px;right:-1px;display:flex;align-items:center;gap:5px;
+    font-family:"Cormorant Garamond",serif;font-style:italic;font-size:.86rem;letter-spacing:.03em;
+    color:var(--paper);background:var(--gold-deep);padding:5px 16px 5px 14px;
+  }
+  @media(max-width:480px){.card.featured .ribbon{font-size:.78rem;padding:4px 12px;}}
+
   /* Pricing */
   .pricing{background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
   .price-grid{display:grid;grid-template-columns:minmax(0,360px);justify-content:center;gap:20px;margin-top:8px;}
@@ -247,7 +263,8 @@
     <div class="cat" id="growth">
       <div class="cat-bar reveal"><span class="idx num-latin">Ⅱ</span><h3>集客・診断ツール</h3><span class="en">Marketing &amp; AI</span></div>
       <div class="grid">
-        <article class="card reveal">
+        <article class="card featured reveal">
+          <span class="ribbon">★ イチオシ</span>
           <div class="no num-latin">05</div>
           <h4>AI口コミ生成ツール</h4>
           <p class="desc">来店客が数問に答えるだけで、AIがGoogleクチコミの文章を自動作成。お客様自身が投稿する、正当なMEO支援ツール。</p>
@@ -278,7 +295,8 @@
           <p class="desc">物語が縦に流れる、上質な縦スクロール型ホームページ。明朝体・大判写真・たっぷりの余白で世界観を伝えるブランドサイト。</p>
           <div class="card-foot"><span class="tag">ブランドサイト</span><span class="link off">準備中</span></div>
         </article>
-        <article class="card reveal">
+        <article class="card featured reveal">
+          <span class="ribbon">★ イチオシ</span>
           <div class="no num-latin">09</div>
           <h4>縦スワイプLP</h4>
           <p class="desc">スマホで指一本、縦にスワイプして読み進める提案型ランディングページ。色・写真・文言を差し替えて何案件にも展開できる。</p>
