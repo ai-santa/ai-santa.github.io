@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ブライダル美容タスク管理（デモ版）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F3; --card:#FFFFFF; --ink:#3A3533; --sub:#8A817B; --line:#E8E0D8;
+    --rose:#B76E79; --rose-dark:#96525E; --rose-bg:#F7ECEE;
+    --amber:#C8901F; --amber-bg:#FBF3E2;
+    --red:#B03A2E; --red-bg:#FBEAE8;
+    --green:#4A7C59; --green-bg:#EAF2ED;
+    --blue:#5B7FA6; --blue-bg:#EAF0F6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{background:var(--bg); color:var(--ink); font-family:'Noto Sans JP',sans-serif; font-size:15px; line-height:1.6;}
+  button{font-family:inherit; cursor:pointer;}
+  input,select,textarea{font-family:inherit; font-size:16px; color:var(--ink); background:#fff;
+    border:1px solid var(--line); border-radius:8px; padding:9px 10px; width:100%;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--rose); outline-offset:0; border-color:var(--rose);}
+  label{font-size:12.5px; color:var(--sub); font-weight:500; display:block; margin-bottom:3px;}
+  .req::after{content:"必須"; background:var(--red); color:#fff; font-size:10px; border-radius:4px;
+    padding:1px 5px; margin-left:6px; vertical-align:1px;}
+  .serif{font-family:'Noto Serif JP',serif;}
+  .app-header{position:sticky; top:0; z-index:30; background:rgba(250,247,243,.96); backdrop-filter:blur(4px);
+    border-bottom:1px solid var(--line); padding:10px 16px; display:flex; align-items:center; gap:10px;}
+  .app-title{font-family:'Noto Serif JP',serif; font-size:17px; font-weight:600; letter-spacing:.06em;}
+  .ver{font-size:10.5px; color:var(--sub);}
+  .userchip{margin-left:auto; display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--sub);}
+  .avatar{width:28px; height:28px; border-radius:50%; color:#fff; display:flex; align-items:center;
+    justify-content:center; font-size:12px; font-weight:700; flex:none;}
+  .nav-desktop{display:flex; gap:4px; padding:8px 12px 0; border-bottom:1px solid var(--line);
+    background:var(--bg); position:sticky; top:49px; z-index:29; overflow-x:auto;}
+  .nav-desktop button{background:none; border:none; border-bottom:3px solid transparent; padding:8px 14px 10px;
+    font-size:14px; color:var(--sub); white-space:nowrap; font-weight:500;}
+  .nav-desktop button.on{color:var(--rose-dark); border-bottom-color:var(--rose); font-weight:700;}
+  .nav-mobile{display:none;}
+  .main{max-width:1080px; margin:0 auto; padding:16px 16px 90px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:14px;}
+  .card h2{font-family:'Noto Serif JP',serif; font-size:16px; margin-bottom:10px; letter-spacing:.04em;}
+  .card h3{font-size:13.5px; color:var(--rose-dark); margin:14px 0 8px; padding-left:8px; border-left:3px solid var(--rose);}
+  .badge{display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:700;
+    border-radius:999px; padding:2px 10px; white-space:nowrap;}
+  .b-hon{background:var(--rose-bg); color:var(--rose-dark); border:1px solid var(--rose);}
+  .b-kari{background:var(--amber-bg); color:var(--amber); border:1px solid var(--amber);}
+  .b-warn{background:var(--red-bg); color:var(--red); border:1px solid var(--red);}
+  .b-ok{background:var(--green-bg); color:var(--green); border:1px solid var(--green);}
+  .b-info{background:var(--blue-bg); color:var(--blue); border:1px solid var(--blue);}
+  .b-gray{background:#F1EDE8; color:var(--sub); border:1px solid var(--line);}
+  .btn{border:none; border-radius:10px; padding:10px 18px; font-size:14px; font-weight:700;}
+  .btn-main{background:var(--rose); color:#fff;}
+  .btn-main:active{background:var(--rose-dark);}
+  .btn-sub{background:#fff; color:var(--rose-dark); border:1.5px solid var(--rose);}
+  .btn-ghost{background:#F1EDE8; color:var(--ink);}
+  .btn-sm{padding:6px 12px; font-size:12.5px; border-radius:8px;}
+  .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .cust-card{cursor:pointer; transition:box-shadow .15s;}
+  .cust-card:hover{box-shadow:0 3px 14px rgba(160,120,110,.15);}
+  .cust-name{font-family:'Noto Serif JP',serif; font-size:17px; font-weight:600;}
+  .meta{font-size:12.5px; color:var(--sub);}
+  .chip{display:inline-block; font-size:11.5px; background:#F5F1EC; border:1px solid var(--line);
+    border-radius:6px; padding:2px 8px; margin:2px 4px 2px 0;}
+  .chip.ev-main{background:var(--rose-bg); border-color:var(--rose); color:var(--rose-dark); font-weight:700;}
+  .fchip{border:1.5px solid var(--line); background:#fff; border-radius:999px; padding:5px 13px;
+    font-size:12.5px; color:var(--sub); font-weight:500;}
+  .fchip.on{border-color:var(--rose); background:var(--rose-bg); color:var(--rose-dark); font-weight:700;}
+  .thumb{width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid var(--rose-bg); flex:none; cursor:zoom-in;}
+  .thumb-none{width:48px; height:48px; border-radius:50%; background:#F1EDE8; color:#C4BBB1; flex:none;
+    display:flex; align-items:center; justify-content:center; font-size:20px;}
+  .dots{display:flex; gap:3px; align-items:center;}
+  .dot{width:16px; height:16px; border-radius:50%; font-size:9px; display:flex; align-items:center;
+    justify-content:center; color:#fff; background:#DDD5CC; flex:none;}
+  .dot.done{background:var(--rose);}
+  .dot.na{background:#EFEAE4; color:#C4BBB1;}
+  .cal{width:100%; border-collapse:collapse; table-layout:fixed;}
+  .cal th{font-size:11.5px; color:var(--sub); padding:4px 0; font-weight:500;}
+  .cal td{border:1px solid var(--line); height:80px; vertical-align:top; padding:3px; cursor:pointer; background:#fff;}
+  .cal td:hover{background:var(--rose-bg);}
+  .cal td.other{background:#F6F2ED; color:#C4BBB1; cursor:default;}
+  .cal td.today .dnum{background:var(--rose); color:#fff; border-radius:50%;}
+  .dnum{font-size:12px; width:22px; height:22px; display:flex; align-items:center; justify-content:center;}
+  .cal-ev{font-size:10px; border-radius:4px; padding:0 3px; margin-top:2px; overflow:hidden;
+    white-space:nowrap; text-overflow:ellipsis; font-weight:700;}
+  .cal-hon{background:var(--rose-bg); color:var(--rose-dark); border-left:3px solid var(--rose);}
+  .cal-kari{background:var(--amber-bg); color:var(--amber); border-left:3px solid var(--amber);}
+  .cal-kyuka{background:#EFEAE4; color:#7A716A; border-left:3px solid #B4A99E;}
+  .sched-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:#fff;}
+  .sched{display:grid; min-width:900px;}
+  .sc-head{font-size:11px; color:var(--sub); text-align:center; border-left:1px solid var(--line); padding:4px 0;}
+  .sc-staff{position:sticky; left:0; background:#FBF8F4; z-index:2; border-top:1px solid var(--line);
+    padding:8px; font-size:12.5px; font-weight:700; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .sc-cell{border-top:1px solid var(--line); border-left:1px solid #F1EBE4; position:relative;}
+  .sc-cell.kyuka{background:repeating-linear-gradient(45deg,#F6F2ED,#F6F2ED 8px,#EFEAE4 8px,#EFEAE4 16px);}
+  .sc-block{position:absolute; top:4px; bottom:4px; border-radius:7px; font-size:11px; line-height:1.35;
+    padding:4px 6px; overflow:hidden; color:#fff; cursor:pointer; z-index:1;}
+  .sc-block.conflict{outline:3px solid var(--red); outline-offset:-1px;}
+  .guest-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .guest-table th{background:#F5F1EC; font-size:11.5px; color:var(--sub); padding:6px; text-align:left; font-weight:500;}
+  .guest-table td{border-top:1px solid var(--line); padding:7px 6px; vertical-align:top;}
+  .est-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .est-table th{background:#F5F1EC; padding:7px 6px; font-size:12px; color:var(--sub); font-weight:500;}
+  .est-table td{border-top:1px solid var(--line); padding:8px 6px;}
+  .num{text-align:right; font-variant-numeric:tabular-nums;}
+  .photo-grid{display:flex; gap:8px; flex-wrap:wrap;}
+  .photo-item{position:relative;}
+  .photo-item img{width:86px; height:86px; object-fit:cover; border-radius:10px; border:1px solid var(--line); cursor:zoom-in;}
+  .photo-del{position:absolute; top:-6px; right:-6px; background:var(--red); color:#fff; border:none;
+    width:22px; height:22px; border-radius:50%; font-size:12px; line-height:1;}
+  .modal-bg{position:fixed; inset:0; background:rgba(58,53,51,.45); z-index:60; display:flex;
+    align-items:center; justify-content:center; padding:16px;}
+  .modal{background:#fff; border-radius:16px; padding:20px; width:100%; max-width:460px;
+    max-height:88vh; overflow-y:auto;}
+  .modal.wide{max-width:640px;}
+  .field{margin-bottom:10px;}
+  .alert-strip{background:var(--red-bg); border:1px solid var(--red); border-radius:12px;
+    padding:10px 14px; margin-bottom:14px; font-size:13.5px;}
+  .kv{display:grid; grid-template-columns:110px 1fr; font-size:13.5px; border-top:1px solid #F1EBE4; padding:6px 0;}
+  .kv .k{color:var(--sub); font-size:12px; padding-top:1px;}
+  .empty-val{color:#C9463A; font-weight:700; font-size:12.5px;}
+  .login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .login-box{background:#fff; border:1px solid var(--line); border-radius:20px; padding:32px 26px;
+    width:100%; max-width:400px; text-align:center;}
+  .staff-pick{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin:14px 0;}
+  .staff-pick button{display:flex; align-items:center; gap:7px; border:1.5px solid var(--line);
+    background:#fff; border-radius:999px; padding:7px 14px; font-size:13.5px;}
+  .staff-pick button.on{border-color:var(--rose); background:var(--rose-bg); font-weight:700;}
+  .section-note{font-size:12px; color:var(--sub); background:#F5F1EC; border-radius:8px; padding:8px 12px; margin-bottom:12px;}
+  .hist{font-size:12.5px; border-left:3px solid var(--line); padding:2px 0 2px 12px; margin:6px 0;}
+  .fab{position:fixed; right:18px; bottom:84px; z-index:40; background:var(--amber); color:#fff;
+    border:none; border-radius:999px; padding:13px 20px; font-size:14px; font-weight:700;
+    box-shadow:0 4px 14px rgba(150,110,30,.35);}
+  .lightbox{position:fixed; inset:0; background:rgba(30,25,23,.85); z-index:80; display:flex;
+    flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:12px; overflow-y:auto;}
+  .lightbox img{max-width:min(92vw,720px); max-height:70vh; border-radius:12px;}
+  @media(min-width:768px){ .fab{bottom:24px;} }
+  @media(max-width:767px){
+    .nav-desktop{display:none;}
+    .nav-mobile{display:flex; position:fixed; bottom:0; left:0; right:0; z-index:50;
+      background:#fff; border-top:1px solid var(--line); padding:4px 2px calc(4px + env(safe-area-inset-bottom));}
+    .nav-mobile button{flex:1; background:none; border:none; font-size:9.5px; color:var(--sub);
+      display:flex; flex-direction:column; align-items:center; gap:1px; padding:5px 0; min-height:48px;}
+    .nav-mobile button.on{color:var(--rose-dark); font-weight:700;}
+    .nav-mobile .ico{font-size:18px;}
+    .grid2{grid-template-columns:1fr 1fr;}
+    .main{padding:12px 12px 100px;}
+    .kv{grid-template-columns:96px 1fr;}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+const VERSION = "Ver0-002";
+const LS_KEY = "bbt_data_v1";
+
+/* ---------- 日付ヘルパー ---------- */
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const addD = (n) => { const d = new Date(TODAY); d.setDate(d.getDate()+n); return d; };
+const iso = (d) => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const isoN = (n) => iso(addD(n));
+const WD = "日月火水木金土";
+const jp = (s) => { if(!s) return "-"; const d = new Date(s+"T00:00:00");
+  return (d.getMonth()+1)+"/"+d.getDate()+"("+WD[d.getDay()]+")"; };
+const jpLong = (s) => { if(!s) return "未定"; const d = new Date(s+"T00:00:00");
+  return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日("+WD[d.getDay()]+")"; };
+const yen = (n) => "¥" + (n||0).toLocaleString();
+const toH = (t) => { if(!t) return null; const [h,m] = t.split(":").map(Number); return h + (m||0)/60; };
+let _seq = 100;
+const genId = () => "id" + (Date.now()) + (_seq++);
+
+/* ---------- マスターデータ（デモ） ---------- */
+const initialMasters = {
+  staff: [
+    { id:"s1", name:"山田 オーナー", role:"master", color:"#B76E79" },
+    { id:"s2", name:"佐藤 千夏",     role:"staff",  color:"#5B7FA6" },
+    { id:"s3", name:"鈴木 彩",       role:"staff",  color:"#4A7C59" },
+    { id:"s4", name:"田中 里奈",     role:"staff",  color:"#C8901F" },
+  ],
+  vendors: [ { id:"v1", name:"中村様（外注・着付け）", color:"#8B6FAE" } ],
+  venues: ["ホテルグランド福井", "福井平和神社", "ガーデン式場アムール", "スタジオ（店内）"],
+  styles: ["チャペル式", "神前式", "人前式", "フォト"],
+  eventTypes: ["打ち合わせ", "メイクリハ", "前撮り", "本使用", "その他"],
+};
+const initialVacations = [
+  { id:"vc1", staffId:"s3", date:isoN(14), note:"有給" },
+  { id:"vc2", staffId:"s4", date:isoN(3),  note:"" },
+];
+
+/* ---------- デモ用サンプル画像 ---------- */
+const demoPhoto = (label, bg) => "data:image/svg+xml;utf8," + encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'>" +
+  "<rect width='320' height='320' fill='" + bg + "'/>" +
+  "<circle cx='160' cy='118' r='56' fill='#ffffff' opacity='0.85'/>" +
+  "<path d='M60 300 Q160 180 260 300 Z' fill='#ffffff' opacity='0.85'/>" +
+  "<text x='160' y='40' font-size='22' text-anchor='middle' fill='#6B605A' font-family='sans-serif'>" + label + "</text></svg>");
+
+/* ---------- 顧客デモデータ ---------- */
+const blankPerson = () => ({ name:"", contact:"", age:"", height:"", body:"", taste:"",
+  job:"", hair:"", costume:"", place:"", note:"" });
+
+const initialCustomers = [
+  {
+    id:"c1", status:"本契約", referral:"式場プランナー様のご紹介", enteredBy:"山田 オーナー",
+    groom:{ name:"田中 健太", contact:"090-1111-2222", age:"29", height:"175cm", body:"やせ型",
+      taste:"ナチュラル", job:"会社員（営業）", hair:"ショート・黒", costume:"タキシード（白）",
+      place:"ホテル2F 美容室", note:"寝ぐせがつきやすいとのこと" },
+    bride:{ name:"田中 美咲", contact:"090-3333-4444", age:"27", height:"158cm", body:"標準",
+      taste:"かわいい系・ピンク好き", job:"保育士", hair:"ロング・茶", costume:"WD→カラードレス（水色）",
+      place:"ホテル2F ブライズルーム", note:"肌が敏感。パッチテスト済み" },
+    use:{ date:isoN(28), venue:"ホテルグランド福井", beautyStart:"07:00", start:"10:00",
+      style:"チャペル式", staffIds:["s2","s3"] },
+    costumes:[
+      { id:"w1", who:"新婦", label:"挙式",     costume:"ウェディングドレス（白）", time:"10:00", note:"" },
+      { id:"w2", who:"新婦", label:"お色直し", costume:"カラードレス（水色）",     time:"13:00", note:"ヘアチェンジあり" },
+      { id:"w3", who:"新郎", label:"挙式",     costume:"タキシード（白）",         time:"10:00", note:"" },
+    ],
+    events:[
+      { id:"e11", type:"打ち合わせ", date:isoN(3),  time:"14:00", dur:1.5, staffIds:["s2"], note:"ヘアメイク打合せ" },
+      { id:"e12", type:"メイクリハ", date:isoN(7),  time:"13:00", dur:2,   staffIds:["s2"], note:"リハメイク＋ヘア" },
+      { id:"e13", type:"前撮り",     date:isoN(14), time:"09:00", dur:3,   staffIds:["s2","s3"], note:"和装前撮り／福井平和神社" },
+      { id:"e14", type:"本使用",     date:isoN(28), time:"07:00", dur:4,   staffIds:["s2","s3"], note:"挙式10:00スタート" },
+    ],
+    guests:[
+      { id:"g1", name:"田中 洋子", sex:"女性", age:"58", hair:true, makeup:true,  kitsuke:"留袖",   note:"新郎母" },
+      { id:"g2", name:"山本 恵子", sex:"女性", age:"55", hair:true, makeup:true,  kitsuke:"留袖",   note:"新婦母" },
+      { id:"g3", name:"山本 沙耶", sex:"女性", age:"24", hair:true, makeup:false, kitsuke:"振袖",   note:"新婦妹" },
+    ],
+    estimates:[{
+      id:"es1", no:"EST-20260801-001-01", date:isoN(-14),
+      items:[
+        { name:"新婦 挙式ヘアメイク（洋装）", qty:1, price:33000, disc:0 },
+        { name:"新婦 お色直し（カラードレス）", qty:1, price:16500, disc:0 },
+        { name:"新郎 ヘアセット", qty:1, price:5500, disc:0 },
+        { name:"列席者 留袖着付け＋ヘアメイク", qty:2, price:13200, disc:0 },
+        { name:"列席者 振袖着付け＋ヘアセット", qty:1, price:15400, disc:2000 },
+        { name:"前撮り 和装ヘアメイク（ロケ）", qty:1, price:27500, disc:0 },
+      ],
+      history:[
+        { date:isoN(-14), by:"山田 オーナー", memo:"新規作成" },
+        { date:isoN(-5),  by:"佐藤 千夏",     memo:"前撮り（和装ロケ）を追加、振袖を値引き対応" },
+      ],
+    }],
+    invoices:[],
+    progress:{ p1:"done", p2:"done", p3:"done", p4:"done", p5:"done", p6:"todo", p7:"todo" },
+    custPhotos:[ demoPhoto("顧客写真サンプル", "#E9CDD2") ],
+    refPhotos:[ demoPhoto("参考写真サンプル", "#CDD9E9") ],
+    note:"",
+  },
+  {
+    id:"c2", status:"本契約", referral:"", enteredBy:"佐藤 千夏",
+    groom:{ ...blankPerson(), name:"高橋 大輔", age:"31", job:"公務員" },
+    bride:{ ...blankPerson(), name:"高橋 結衣", age:"30", taste:"シンプル・上品" },
+    use:{ date:isoN(45), venue:"福井平和神社", beautyStart:"", start:"11:00",
+      style:"神前式", staffIds:[] },
+    costumes:[ { id:"w4", who:"新婦", label:"挙式", costume:"白無垢", time:"", note:"" } ],
+    events:[
+      { id:"e21", type:"メイクリハ", date:isoN(20), time:"15:00", dur:2, staffIds:[], note:"白無垢に合わせて" },
+      { id:"e22", type:"本使用",     date:isoN(45), time:"08:30", dur:4, staffIds:[], note:"" },
+    ],
+    guests:[], estimates:[], invoices:[],
+    progress:{ p1:"na", p2:"done", p3:"todo", p4:"todo", p5:"todo", p6:"todo", p7:"todo" },
+    custPhotos:[], refPhotos:[], note:"列席者の美容は人数確認中",
+  },
+  {
+    id:"c3", status:"仮予約", referral:"ご友人の紹介", enteredBy:"鈴木 彩",
+    groom:{ ...blankPerson() },
+    bride:{ ...blankPerson(), name:"中村 様" },
+    use:{ date:isoN(60), venue:"", beautyStart:"", start:"", style:"", staffIds:[] },
+    costumes:[],
+    events:[ { id:"e31", type:"その他", date:isoN(60), time:"", dur:2, staffIds:[], note:"仮予約（挙式希望日）" } ],
+    guests:[], estimates:[], invoices:[],
+    progress:{ p1:"todo", p2:"todo", p3:"todo", p4:"todo", p5:"todo", p6:"todo", p7:"todo" },
+    custPhotos:[], refPhotos:[], note:"10月挙式希望。来週ご来店予定",
+  },
+  {
+    id:"c4", status:"本契約", referral:"Instagram", enteredBy:"田中 里奈",
+    groom:{ ...blankPerson(), name:"伊藤 翔", contact:"080-5555-6666", age:"27", costume:"紋付袴（黒）" },
+    bride:{ ...blankPerson(), name:"伊藤 花音", contact:"080-7777-8888", age:"26",
+      taste:"クラシカル", hair:"ミディアム", costume:"白無垢＋色打掛" },
+    use:{ date:isoN(10), venue:"スタジオ（店内）", beautyStart:"09:00", start:"10:30",
+      style:"フォト", staffIds:["s4"] },
+    costumes:[
+      { id:"w5", who:"新婦", label:"撮影1", costume:"白無垢", time:"10:30", note:"" },
+      { id:"w6", who:"新婦", label:"撮影2（お色直し）", costume:"色打掛（赤）", time:"11:30", note:"" },
+    ],
+    events:[
+      { id:"e41", type:"本使用", date:isoN(10), time:"09:00", dur:3, staffIds:["s4"], note:"フォトウェディング撮影" },
+    ],
+    guests:[],
+    estimates:[{
+      id:"es4", no:"EST-20260805-002-01", date:isoN(-9),
+      items:[
+        { name:"フォトプラン 新婦ヘアメイク（和装）", qty:1, price:27500, disc:0 },
+        { name:"フォトプラン 新郎着付け", qty:1, price:8800, disc:0 },
+      ],
+      history:[ { date:isoN(-9), by:"山田 オーナー", memo:"新規作成" } ],
+    }],
+    invoices:[],
+    progress:{ p1:"done", p2:"done", p3:"done", p4:"done", p5:"done", p6:"done", p7:"todo" },
+    custPhotos:[], refPhotos:[], note:"",
+  },
+  {
+    id:"c5", status:"本契約", referral:"", enteredBy:"山田 オーナー",
+    groom:{ ...blankPerson(), name:"斎藤 亮" },
+    bride:{ ...blankPerson(), name:"斎藤 真帆", contact:"090-0000-1111" },
+    use:{ date:isoN(-10), venue:"ガーデン式場アムール", beautyStart:"08:00", start:"11:00",
+      style:"人前式", staffIds:["s3"] },
+    costumes:[],
+    events:[ { id:"e51", type:"本使用", date:isoN(-10), time:"08:00", dur:4, staffIds:["s3"], note:"" } ],
+    guests:[], estimates:[],
+    invoices:[{
+      id:"inv1", no:"INV-20260806-001-01", date:isoN(-9),
+      items:[ { name:"挙式ヘアメイク一式", qty:1, price:60500, disc:0 } ],
+      history:[ { date:isoN(-9), by:"山田 オーナー", memo:"発行" } ],
+    }],
+    progress:{ p1:"done", p2:"done", p3:"done", p4:"done", p5:"done", p6:"done", p7:"done" },
+    custPhotos:[], refPhotos:[], note:"施行完了。請求書発行済み",
+  },
+];
+
+/* ---------- 保存（自動保存・バックアップ・復元） ---------- */
+const blankCustomer = () => ({
+  id:"", status:"本契約", referral:"", enteredBy:"",
+  groom: blankPerson(), bride: blankPerson(),
+  use:{ date:"", venue:"", beautyStart:"", start:"", style:"", staffIds:[] },
+  costumes:[], events:[], guests:[], estimates:[], invoices:[],
+  progress:{ p1:"todo", p2:"todo", p3:"todo", p4:"todo", p5:"todo", p6:"todo", p7:"todo" },
+  custPhotos:[], refPhotos:[], note:"",
+});
+const normalizeCustomer = (c) => {
+  const b = blankCustomer();
+  return { ...b, ...c,
+    groom:{...blankPerson(), ...(c.groom||{})}, bride:{...blankPerson(), ...(c.bride||{})},
+    use:{...b.use, ...(c.use||{})},
+    costumes:c.costumes||[], events:c.events||[], guests:c.guests||[],
+    estimates:c.estimates||[], invoices:c.invoices||[],
+    progress:{...b.progress, ...(c.progress||{})},
+    custPhotos:c.custPhotos || c.photos || [], refPhotos:c.refPhotos||[] };
+};
+function loadSaved(){
+  try{
+    const j = JSON.parse(localStorage.getItem(LS_KEY));
+    if(j && Array.isArray(j.customers)) return {
+      customers: j.customers.map(normalizeCustomer),
+      masters: j.masters && j.masters.staff ? j.masters : initialMasters,
+      vacations: Array.isArray(j.vacations) ? j.vacations : [],
+    };
+  }catch(e){ console.warn("保存データの読み込みに失敗:", e); }
+  return null;
+}
+
+/* ---------- タスク漏れチェック・進捗 ---------- */
+const REQUIRED_FIELDS = [
+  ["bride","name","新婦のお名前"], ["bride","contact","新婦の連絡先"],
+  ["groom","name","新郎のお名前"],
+  ["use","date","本使用日"], ["use","venue","使用場所"], ["use","style","挙式スタイル"],
+  ["use","beautyStart","美容開始時間"], ["use","start","スタート時間"],
+];
+function missingList(c){
+  if(c.status !== "本契約") return [];
+  if(c.use.date && c.use.date < iso(TODAY)) return [];
+  const miss = [];
+  REQUIRED_FIELDS.forEach(([sec, key, label]) => {
+    const v = (c[sec]||{})[key];
+    if(!v || (Array.isArray(v) && v.length===0)) miss.push(label);
+  });
+  if(!c.use.staffIds || c.use.staffIds.length===0) miss.push("スタッフ担当");
+  if(!c.estimates || c.estimates.length===0) miss.push("お見積書");
+  return miss;
+}
+const STEPS = ["新規見積","新規カルテ","打合せカルテ","中途見積","スケジュール","最終確認","請求書"];
+function nextEvent(c){
+  const t = iso(TODAY);
+  const fut = (c.events||[]).filter(e => e.date >= t).sort((a,b)=>a.date.localeCompare(b.date));
+  return fut[0] || null;
+}
+function estTotals(est){
+  let gross=0, disc=0;
+  est.items.forEach(it => { gross += it.qty*it.price; disc += it.disc||0; });
+  return { gross, disc, net: gross-disc };
+}
+const custName = (c) => (c.bride.name || c.groom.name || "（名前未入力）");
+
+/* ---------- スタッフ重複・休暇チェック ---------- */
+const rangesOverlap = (t1, d1, t2, d2) => t1 < t2 + d2 && t2 < t1 + d1;
+function checkEventConflicts(customers, vacations, staffAll, custId, eventId, ev){
+  const msgs = [];
+  const sName = (id) => { const s = staffAll.find(x=>x.id===id); return s ? s.name : "?"; };
+  (ev.staffIds||[]).forEach(sid => {
+    if(vacations.some(v => v.staffId===sid && v.date===ev.date))
+      msgs.push(sName(sid)+" はこの日「休暇」です");
+    if(!ev.time) return;
+    customers.forEach(c2 => (c2.events||[]).forEach(e2 => {
+      if(c2.id===custId && e2.id===eventId) return;
+      if(e2.date!==ev.date || !e2.time || !(e2.staffIds||[]).includes(sid)) return;
+      if(rangesOverlap(toH(ev.time), ev.dur||2, toH(e2.time), e2.dur||2))
+        msgs.push(sName(sid)+"："+custName(c2)+" 様の"+e2.type+"（"+e2.time+"〜）と時間が重なっています");
+    }));
+  });
+  return [...new Set(msgs)];
+}
+
+/* ---------- 画像縮小 ---------- */
+function shrinkImage(file, cb){
+  const fr = new FileReader();
+  fr.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 800;
+      const sc = Math.min(1, max/Math.max(img.width, img.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.width*sc); cv.height = Math.round(img.height*sc);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL("image/jpeg", 0.8));
+    };
+    img.src = ev.target.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* ---------- 小物コンポーネント ---------- */
+function ProgressDots({ progress }){
+  return (
+    <div className="dots" title="①見積→⑦請求書の進捗">
+      {STEPS.map((s,i) => {
+        const st = progress["p"+(i+1)];
+        return <div key={i} className={"dot "+(st==="done"?"done":st==="na"?"na":"")}
+          title={"①②③④⑤⑥⑦"[i]+s+"："+(st==="done"?"完了":st==="na"?"対象外":"未")}>{i+1}</div>;
+      })}
+    </div>
+  );
+}
+function StatusBadge({ status }){
+  return <span className={"badge "+(status==="本契約"?"b-hon":"b-kari")}>{status==="本契約"?"● 本契約":"◌ 仮予約"}</span>;
+}
+function WarnBadge({ c }){
+  const miss = missingList(c);
+  if(miss.length===0) return c.status==="本契約" ? <span className="badge b-ok">✓ 重要項目OK</span> : null;
+  return <span className="badge b-warn">⚠ 未入力 {miss.length}件</span>;
+}
+function Val({ v }){
+  return v ? <span>{v}</span> : <span className="empty-val">未入力</span>;
+}
+function Lightbox({ photos, title, onClose }){
+  return (
+    <div className="lightbox" onClick={onClose}>
+      <div style={{color:"#fff", fontSize:14}}>{title}（タップで閉じる）</div>
+      {photos.map((p,i)=><img key={i} src={p} alt=""/>)}
+    </div>
+  );
+}
+function PhotoGrid({ photos, onDelete, onZoom }){
+  if(!photos.length) return <div className="meta">まだありません</div>;
+  return (
+    <div className="photo-grid">
+      {photos.map((p,i) => (
+        <div key={i} className="photo-item">
+          <img src={p} alt="" onClick={()=>onZoom && onZoom(i)}/>
+          {onDelete && <button className="photo-del" onClick={()=>onDelete(i)}>✕</button>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- ログイン画面 ---------- */
+function LoginScreen({ masters, onLogin }){
+  const [sel, setSel] = useState(null);
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState("");
+  const submit = () => {
+    if(!sel){ setErr("お名前を選んでください"); return; }
+    onLogin(sel);
+  };
+  return (
+    <div className="login-wrap">
+      <div className="login-box">
+        <div className="serif" style={{fontSize:22, letterSpacing:".12em"}}>Bridal Beauty</div>
+        <div className="serif" style={{fontSize:15, marginTop:2, letterSpacing:".2em", color:"var(--rose-dark)"}}>タスク管理</div>
+        <div className="ver" style={{marginTop:6}}>{VERSION}（デモ版）</div>
+        <div style={{fontSize:13, color:"var(--sub)", margin:"16px 0 4px"}}>お名前を選んでください</div>
+        <div className="staff-pick">
+          {masters.staff.map(s => (
+            <button key={s.id} className={sel && sel.id===s.id ? "on":""} onClick={()=>{setSel(s); setErr("");}}>
+              <span className="avatar" style={{background:s.color}}>{s.name[0]}</span>
+              {s.name}{s.role==="master" && <span style={{fontSize:10, color:"var(--rose-dark)"}}>👑</span>}
+            </button>
+          ))}
+        </div>
+        <div className="field" style={{textAlign:"left"}}>
+          <label>パスワード</label>
+          <input type="password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="デモ版は未入力でもOK" />
+        </div>
+        {err && <div style={{color:"var(--red)", fontSize:12.5, marginBottom:8}}>{err}</div>}
+        <button className="btn btn-main" style={{width:"100%", marginTop:4}} onClick={submit}>ログイン</button>
+        <div style={{fontSize:11.5, color:"var(--sub)", marginTop:14, lineHeight:1.7}}>
+          🔐 本番版はパスワード認証＋暗号化通信で保護されます。<br/>従業員アカウントの発行はマスターのみ行えます。
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- ホーム（顧客一覧） ---------- */
+function HomeView({ customers, masters, onOpen, onOpenEst, onGoDate }){
+  const t = iso(TODAY);
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState("next");
+  const [zoom, setZoom] = useState(null);
+  let list = customers.filter(c => (c.use.date && c.use.date >= t) || nextEvent(c));
+  if(filter==="hon")   list = list.filter(c => c.status==="本契約");
+  if(filter==="kari")  list = list.filter(c => c.status==="仮予約");
+  if(filter==="warn")  list = list.filter(c => missingList(c).length > 0);
+  if(filter==="guest") list = list.filter(c => c.guests.length > 0);
+  if(q.trim()){
+    const k = q.trim().toLowerCase();
+    list = list.filter(c => [c.bride.name, c.groom.name, c.referral, c.note,
+      ...(c.guests||[]).map(g=>g.name)].join("|").toLowerCase().includes(k));
+  }
+  if(sort==="next") list = [...list].sort((a,b)=>{
+    const na = nextEvent(a), nb = nextEvent(b);
+    return (na?na.date:"9999").localeCompare(nb?nb.date:"9999"); });
+  if(sort==="date") list = [...list].sort((a,b)=>(a.use.date||"9999").localeCompare(b.use.date||"9999"));
+  if(sort==="name") list = [...list].sort((a,b)=>custName(a).localeCompare(custName(b),"ja"));
+  const warns = customers.filter(c => missingList(c).length > 0);
+  return (
+    <div>
+      {warns.length > 0 && (
+        <div className="alert-strip">
+          <b>⚠ 確認が必要なお客様が {warns.length}組 います</b>
+          <div style={{marginTop:4}}>
+            {warns.map(c => (
+              <div key={c.id} style={{cursor:"pointer"}} onClick={()=>onOpen(c.id)}>
+                ・{custName(c)} 様 —
+                <span style={{color:"var(--red)"}}> {missingList(c).slice(0,3).join("／")}
+                {missingList(c).length>3 ? " ほか":""} が未入力</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="card" style={{padding:12}}>
+        <div className="row" style={{alignItems:"center"}}>
+          <input style={{flex:1, minWidth:180}} placeholder="🔍 お名前・紹介元・列席者名で検索"
+            value={q} onChange={e=>setQ(e.target.value)}/>
+          <select style={{width:170}} value={sort} onChange={e=>setSort(e.target.value)}>
+            <option value="next">並び順：次の予定が近い順</option>
+            <option value="date">並び順：本使用日順</option>
+            <option value="name">並び順：お名前順</option>
+          </select>
+        </div>
+        <div className="row" style={{gap:6, marginTop:10}}>
+          {[["all","すべて"],["hon","本契約"],["kari","仮予約"],["warn","⚠要確認"],["guest","列席者あり"]].map(([k,label]) => (
+            <button key={k} className={"fchip "+(filter===k?"on":"")} onClick={()=>setFilter(k)}>{label}</button>
+          ))}
+        </div>
+      </div>
+      <div className="meta" style={{marginBottom:8}}>本日以降のご予定があるお客様（{list.length}組）</div>
+      {list.length===0 && <div className="card meta">条件に合うお客様が見つかりませんでした</div>}
+      {list.map(c => {
+        return (
+          <div key={c.id} className="card cust-card" onClick={()=>onOpen(c.id)}>
+            <div className="row" style={{alignItems:"center", gap:10}}>
+              {c.custPhotos.length > 0
+                ? <img className="thumb" src={c.custPhotos[0]} alt=""
+                    onClick={(e)=>{e.stopPropagation(); setZoom(c);}}/>
+                : <div className="thumb-none">👤</div>}
+              <div style={{flex:1, minWidth:0}}>
+                <div className="row" style={{alignItems:"center", gap:8}}>
+                  <span className="cust-name">{c.bride.name || "（新婦名未入力）"}<span className="meta"> ・ </span>{c.groom.name || "（新郎名未入力）"} <span className="meta">様</span></span>
+                  <StatusBadge status={c.status} />
+                  <WarnBadge c={c} />
+                </div>
+                <div className="meta" style={{margin:"2px 0 0"}}>
+                  本使用日：<b style={{color:"var(--ink)"}}>{jpLong(c.use.date)}</b>
+                  {c.use.venue ? "　＠"+c.use.venue : ""}　{c.use.style || ""}
+                </div>
+              </div>
+            </div>
+            <div style={{marginTop:8}}>
+              {(c.events||[]).filter(e=>e.date>=t).sort((a,b)=>a.date.localeCompare(b.date)).map(e => (
+                <span key={e.id} className={"chip "+(e.type==="本使用"?"ev-main":"")}
+                  onClick={(ev)=>{ev.stopPropagation(); onGoDate(e.date);}}>
+                  {e.type} {jp(e.date)} {e.time}
+                </span>
+              ))}
+            </div>
+            <div className="row" style={{alignItems:"center", marginTop:10, gap:10}}>
+              <ProgressDots progress={c.progress} />
+              {c.guests.length > 0
+                ? <span className="badge b-info">列席者美容 {c.guests.length}名</span>
+                : <span className="badge b-gray">列席者なし</span>}
+              {c.estimates.length > 0
+                ? <button className="btn btn-sub btn-sm" onClick={(e)=>{e.stopPropagation(); onOpenEst(c.id);}}>📄 見積書</button>
+                : (c.status==="本契約" ? <span className="badge b-warn">見積書なし</span> : null)}
+              {c.use.date && c.use.date >= t &&
+                <button className="btn btn-sub btn-sm" onClick={(e)=>{e.stopPropagation(); onGoDate(c.use.date);}}>⏱ 本使用日のタイム表</button>}
+            </div>
+          </div>
+        );
+      })}
+      {zoom && <Lightbox photos={zoom.custPhotos} title={custName(zoom)+" 様の顧客写真"} onClose={()=>setZoom(null)}/>}
+    </div>
+  );
+}
+
+/* ---------- カレンダー ---------- */
+function VacationModal({ masters, vacations, setVacations, onClose }){
+  const [staffId, setStaffId] = useState("");
+  const [date, setDate] = useState("");
+  const [note, setNote] = useState("");
+  const [err, setErr] = useState("");
+  const staffAll = [...masters.staff, ...masters.vendors];
+  const sName = (id) => { const s = staffAll.find(x=>x.id===id); return s ? s.name : "?"; };
+  const add = () => {
+    if(!staffId || !date){ setErr("スタッフと日付を選んでください"); return; }
+    setVacations(prev => [...prev, { id:genId(), staffId, date, note }]);
+    setStaffId(""); setDate(""); setNote(""); setErr("");
+  };
+  const upcoming = [...vacations].sort((a,b)=>a.date.localeCompare(b.date));
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <h2 className="serif" style={{fontSize:17, marginBottom:4}}>スタッフの休暇日</h2>
+        <div className="meta" style={{marginBottom:12}}>休暇日はカレンダーとタイム表に表示され、担当を入れようとするとエラーが出ます。</div>
+        <div className="field"><label className="req">スタッフ</label>
+          <select value={staffId} onChange={e=>setStaffId(e.target.value)}>
+            <option value="">選択してください</option>
+            {masters.staff.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+          </select></div>
+        <div className="field"><label className="req">日付</label>
+          <input type="date" value={date} onChange={e=>setDate(e.target.value)}/></div>
+        <div className="field"><label>メモ</label>
+          <input value={note} onChange={e=>setNote(e.target.value)} placeholder="有給・午前のみ など"/></div>
+        {err && <div style={{color:"var(--red)", fontSize:12.5, marginBottom:8}}>{err}</div>}
+        <button className="btn btn-main" style={{width:"100%"}} onClick={add}>＋ 休暇を登録</button>
+        <h3 style={{fontSize:13, color:"var(--rose-dark)", margin:"16px 0 6px"}}>登録済みの休暇</h3>
+        {upcoming.length===0 && <div className="meta">まだありません</div>}
+        {upcoming.map(v => (
+          <div key={v.id} className="row" style={{alignItems:"center", borderTop:"1px solid #F1EBE4", padding:"6px 0"}}>
+            <b style={{fontSize:13.5}}>{jp(v.date)}</b>
+            <span style={{fontSize:13.5}}>{sName(v.staffId)}</span>
+            <span className="meta" style={{flex:1}}>{v.note}</span>
+            <button className="btn btn-ghost btn-sm" onClick={()=>setVacations(prev=>prev.filter(x=>x.id!==v.id))}>削除</button>
+          </div>
+        ))}
+        <button className="btn btn-ghost" style={{width:"100%", marginTop:14}} onClick={onClose}>閉じる</button>
+      </div>
+    </div>
+  );
+}
+function CalendarView({ customers, masters, vacations, setVacations, onPickDate }){
+  const [ym, setYm] = useState([TODAY.getFullYear(), TODAY.getMonth()]);
+  const [showVac, setShowVac] = useState(false);
+  const [y, m] = ym;
+  const first = new Date(y, m, 1);
+  const startDow = first.getDay();
+  const daysIn = new Date(y, m+1, 0).getDate();
+  const cells = [];
+  for(let i=0;i<startDow;i++) cells.push(null);
+  for(let d=1; d<=daysIn; d++) cells.push(d);
+  while(cells.length % 7 !== 0) cells.push(null);
+  const evOf = (dstr) => {
+    const out = [];
+    customers.forEach(c => (c.events||[]).forEach(e => {
+      if(e.date === dstr) out.push({ c, e });
+    }));
+    return out;
+  };
+  const sName = (id) => { const s = masters.staff.find(x=>x.id===id); return s ? s.name.split(" ")[0] : "?"; };
+  const move = (dir) => setYm(([yy,mm]) => { const d = new Date(yy, mm+dir, 1); return [d.getFullYear(), d.getMonth()]; });
+  return (
+    <div className="card">
+      <div className="row" style={{alignItems:"center", marginBottom:10}}>
+        <button className="btn btn-ghost btn-sm" onClick={()=>move(-1)}>‹ 前月</button>
+        <h2 style={{margin:"0 auto"}}>{y}年 {m+1}月</h2>
+        <button className="btn btn-ghost btn-sm" onClick={()=>move(1)}>次月 ›</button>
+      </div>
+      <div className="row" style={{alignItems:"center", marginBottom:8}}>
+        <span className="badge b-hon">本契約</span>
+        <span className="badge b-kari">仮予約</span>
+        <span className="badge b-gray">🌴 休暇</span>
+        <span className="meta">日付タップでその日のタイム表へ</span>
+        <button className="btn btn-sub btn-sm" style={{marginLeft:"auto"}} onClick={()=>setShowVac(true)}>🌴 休暇日を登録</button>
+      </div>
+      <table className="cal">
+        <thead><tr>{["日","月","火","水","木","金","土"].map(w=><th key={w}>{w}</th>)}</tr></thead>
+        <tbody>
+          {Array.from({length: cells.length/7}, (_,r) => (
+            <tr key={r}>
+              {cells.slice(r*7,(r+1)*7).map((d,i) => {
+                if(!d) return <td key={i} className="other"></td>;
+                const dstr = y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+                const evs = evOf(dstr);
+                const vacs = vacations.filter(v=>v.date===dstr);
+                const isToday = dstr === iso(TODAY);
+                return (
+                  <td key={i} className={isToday?"today":""} onClick={()=>onPickDate(dstr)}>
+                    <div className="dnum">{d}</div>
+                    {vacs.map((v,j)=><div key={"v"+j} className="cal-ev cal-kyuka">休 {sName(v.staffId)}</div>)}
+                    {evs.slice(0,3).map((x,j) => (
+                      <div key={j} className={"cal-ev "+(x.c.status==="仮予約"?"cal-kari":"cal-hon")}>
+                        {(x.c.bride.name || x.c.groom.name || "?").split(" ")[0]}・{x.e.type}
+                      </div>
+                    ))}
+                    {evs.length > 3 && <div className="meta" style={{fontSize:10}}>ほか{evs.length-3}件</div>}
+                    {evs.length > 0 && <div className="meta" style={{fontSize:10}}>計{evs.length}件</div>}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {showVac && <VacationModal masters={masters} vacations={vacations} setVacations={setVacations}
+        onClose={()=>setShowVac(false)}/>}
+    </div>
+  );
+}
+
+/* ---------- 予定の編集モーダル（タイム表から） ---------- */
+function EventEditModal({ c, e, customers, vacations, masters, onSave, onOpenKarte, onClose }){
+  const staffAll = [...masters.staff, ...masters.vendors];
+  const [form, setForm] = useState({ date:e.date, time:e.time, dur:e.dur||2, staffIds:[...(e.staffIds||[])], note:e.note||"" });
+  const [errs, setErrs] = useState([]);
+  const toggle = (sid) => setForm(f => ({...f,
+    staffIds: f.staffIds.includes(sid) ? f.staffIds.filter(x=>x!==sid) : [...f.staffIds, sid]}));
+  const trySave = (ignore) => {
+    const conflicts = checkEventConflicts(customers, vacations, staffAll, c.id, e.id, form);
+    if(conflicts.length && !ignore){ setErrs(conflicts); return; }
+    onSave(c.id, e.id, form);
+  };
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={ev=>ev.stopPropagation()}>
+        <h2 className="serif" style={{fontSize:17, marginBottom:2}}>{custName(c)} 様／{e.type}</h2>
+        <div className="meta" style={{marginBottom:12}}>時間と担当スタッフをここで調整できます</div>
+        <div className="grid2">
+          <div className="field"><label>日付</label>
+            <input type="date" value={form.date} onChange={ev=>setForm(f=>({...f, date:ev.target.value}))}/></div>
+          <div className="field"><label>開始時間</label>
+            <input type="time" value={form.time} onChange={ev=>setForm(f=>({...f, time:ev.target.value}))}/></div>
+        </div>
+        <div className="field"><label>所要時間</label>
+          <select value={form.dur} onChange={ev=>setForm(f=>({...f, dur:Number(ev.target.value)}))}>
+            {[0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8].map(h=><option key={h} value={h}>{h}時間</option>)}
+          </select></div>
+        <div className="field"><label>担当スタッフ・外注先（複数OK）</label>
+          <div className="row" style={{gap:6}}>
+            {staffAll.map(s => (
+              <button key={s.id} type="button"
+                className={"btn btn-sm "+(form.staffIds.includes(s.id)?"btn-main":"btn-ghost")}
+                onClick={()=>toggle(s.id)}>{s.name.split("（")[0].split(" ")[0]}</button>
+            ))}
+          </div></div>
+        <div className="field"><label>メモ</label>
+          <input value={form.note} onChange={ev=>setForm(f=>({...f, note:ev.target.value}))}/></div>
+        {errs.length > 0 && (
+          <div className="alert-strip">
+            <b>⚠ このままでは登録できません</b>
+            {errs.map((m,i)=><div key={i}>・{m}</div>)}
+            <button className="btn btn-ghost btn-sm" style={{marginTop:6}} onClick={()=>trySave(true)}>エラーを無視して保存する</button>
+          </div>
+        )}
+        <div className="row" style={{marginTop:6}}>
+          <button className="btn btn-main" style={{flex:1}} onClick={()=>trySave(false)}>保存</button>
+          <button className="btn btn-sub" onClick={()=>onOpenKarte(c.id)}>📋 カルテ</button>
+          <button className="btn btn-ghost" onClick={onClose}>閉じる</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- タイムスケジュール ---------- */
+const HOURS_START = 7, HOURS_END = 19, HOUR_W = 72;
+function ScheduleView({ customers, masters, vacations, date, setDate, onOpenEdit }){
+  const rows = [...masters.staff, ...masters.vendors];
+  const staffAll = rows;
+  const t = date;
+  const blocks = [];
+  customers.forEach(c => (c.events||[]).forEach(e => {
+    if(e.date !== t || !e.time) return;
+    const startH = toH(e.time);
+    const item = { c, e, startH, dur: e.dur || 2 };
+    if(!e.staffIds || e.staffIds.length===0) blocks.push({ ...item, staffId:"none" });
+    else e.staffIds.forEach(sid => blocks.push({ ...item, staffId:sid }));
+  }));
+  const unassigned = blocks.filter(b => b.staffId === "none");
+  const conflictKeys = new Set();
+  const conflictMsgs = [];
+  rows.forEach(s => {
+    const bs = blocks.filter(b => b.staffId===s.id);
+    const onVac = vacations.some(v => v.staffId===s.id && v.date===t);
+    if(onVac) bs.forEach(b => {
+      conflictKeys.add(b.c.id+"|"+b.e.id+"|"+s.id);
+      conflictMsgs.push(s.name+" は休暇なのに「"+custName(b.c)+" 様／"+b.e.type+"」の担当になっています");
+    });
+    for(let i=0;i<bs.length;i++) for(let j=i+1;j<bs.length;j++){
+      if(rangesOverlap(bs[i].startH, bs[i].dur, bs[j].startH, bs[j].dur)){
+        conflictKeys.add(bs[i].c.id+"|"+bs[i].e.id+"|"+s.id);
+        conflictKeys.add(bs[j].c.id+"|"+bs[j].e.id+"|"+s.id);
+        conflictMsgs.push(s.name+"："+custName(bs[i].c)+" 様と "+custName(bs[j].c)+" 様の時間が重なっています");
+      }
+    }
+  });
+  const moveDay = (n) => { const d = new Date(t+"T00:00:00"); d.setDate(d.getDate()+n); setDate(iso(d)); };
+  const gridCols = { gridTemplateColumns: "130px repeat("+(HOURS_END-HOURS_START)+", "+HOUR_W+"px)" };
+  return (
+    <div>
+      <div className="card">
+        <div className="row" style={{alignItems:"center"}}>
+          <button className="btn btn-ghost btn-sm" onClick={()=>moveDay(-1)}>‹ 前日</button>
+          <h2 style={{margin:"0 auto"}}>{jpLong(t)} のタイム表</h2>
+          <button className="btn btn-ghost btn-sm" onClick={()=>moveDay(1)}>翌日 ›</button>
+        </div>
+        <div className="meta" style={{margin:"6px 0 10px"}}>横＝時間、縦＝スタッフ（外注先も含む）。ブロックをタップで時間・担当を編集できます</div>
+        {conflictMsgs.length > 0 && (
+          <div className="alert-strip">
+            <b>🚨 スタッフの予定が重なっています（{conflictMsgs.length}件）</b>
+            {[...new Set(conflictMsgs)].map((m,i)=><div key={i}>・{m}</div>)}
+          </div>
+        )}
+        {unassigned.length > 0 && (
+          <div className="alert-strip">⚠ <b>担当スタッフが未割り当ての予定が {unassigned.length}件</b> あります（最下段に表示）</div>
+        )}
+        <div className="sched-wrap">
+          <div className="sched" style={gridCols}>
+            <div className="sc-staff" style={{borderTop:"none"}}></div>
+            {Array.from({length:HOURS_END-HOURS_START},(_,i)=>(
+              <div key={i} className="sc-head">{HOURS_START+i}:00</div>
+            ))}
+            {rows.map(s => {
+              const vac = vacations.find(v => v.staffId===s.id && v.date===t);
+              return (
+              <React.Fragment key={s.id}>
+                <div className="sc-staff">
+                  <span className="avatar" style={{background:s.color}}>{s.name[0]}</span>{s.name}
+                  {vac && <span className="badge b-gray">🌴休暇{vac.note?"("+vac.note+")":""}</span>}
+                </div>
+                <div className={"sc-cell"+(vac?" kyuka":"")} style={{gridColumn:"span "+(HOURS_END-HOURS_START), height:58}}>
+                  {blocks.filter(b=>b.staffId===s.id).map((b,i) => {
+                    const isConf = conflictKeys.has(b.c.id+"|"+b.e.id+"|"+s.id);
+                    return (
+                    <div key={i} className={"sc-block"+(isConf?" conflict":"")} style={{
+                        left: (b.startH-HOURS_START)*HOUR_W + 2,
+                        width: b.dur*HOUR_W - 6,
+                        background: s.color }}
+                      onClick={()=>onOpenEdit(b.c, b.e)}>
+                      {isConf && "🚨 "}<b>{custName(b.c)} 様</b>／{b.e.type}<br/>
+                      ＠{b.c.use.venue || "場所未定"}
+                    </div>
+                  );})}
+                </div>
+              </React.Fragment>
+            );})}
+            {unassigned.length > 0 && (
+              <React.Fragment>
+                <div className="sc-staff" style={{color:"var(--red)"}}>⚠ 未割り当て</div>
+                <div className="sc-cell" style={{gridColumn:"span "+(HOURS_END-HOURS_START), height:58}}>
+                  {unassigned.map((b,i) => (
+                    <div key={i} className="sc-block" style={{
+                        left:(b.startH-HOURS_START)*HOUR_W + 2, width:b.dur*HOUR_W - 6,
+                        background:"var(--red)" }}
+                      onClick={()=>onOpenEdit(b.c, b.e)}>
+                      <b>{custName(b.c)} 様</b>／{b.e.type}<br/>タップして担当を決めてください
+                    </div>
+                  ))}
+                </div>
+              </React.Fragment>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- カルテフォーム（新規・編集 共用） ---------- */
+function PersonForm({ title, p, set }){
+  const f = (key, label, ph, req) => (
+    <div className="field">
+      <label className={req?"req":""}>{label}</label>
+      <input value={p[key]} placeholder={ph||""} onChange={e=>set({...p, [key]:e.target.value})}/>
+    </div>
+  );
+  return (
+    <div>
+      <h3>{title}</h3>
+      <div className="grid2">
+        {f("name", "お名前", "例）田中 健太", true)}
+        {f("contact", "連絡先", "電話番号など", title==="新婦")}
+        {f("age", "年齢")}
+        {f("height", "身長")}
+        {f("body", "体型")}
+        {f("taste", "お好み・雰囲気")}
+        {f("job", "お仕事内容")}
+        {f("hair", "髪型・髪色")}
+        {f("costume", "衣装内容")}
+        {f("place", "美容・着付け場所")}
+      </div>
+      <div className="field"><label>備考</label>
+        <textarea rows="2" value={p.note} onChange={e=>set({...p, note:e.target.value})}/></div>
+    </div>
+  );
+}
+
+function KarteForm({ masters, initial, user, onSave, onCancel }){
+  const [c, setC] = useState(() => initial.enteredBy ? initial : {...initial, enteredBy:user.name});
+  const [zoom, setZoom] = useState(null);
+  const setP = (k) => (v) => setC(prev => ({...prev, [k]:v}));
+  const setTop = (k, v) => setC(prev => ({...prev, [k]:v}));
+  const setUse = (k, v) => setC(prev => ({...prev, use:{...prev.use, [k]:v}}));
+  const toggleStaff = (sid) => setC(prev => {
+    const cur = prev.use.staffIds || [];
+    return {...prev, use:{...prev.use, staffIds: cur.includes(sid) ? cur.filter(x=>x!==sid) : [...cur, sid]}};
+  });
+  const addRow = (key, obj) => setC(prev => ({...prev, [key]:[...prev[key], obj]}));
+  const setRow = (key, id, patch) => setC(prev => ({...prev,
+    [key]: prev[key].map(x => x.id===id ? {...x, ...patch} : x)}));
+  const delRow = (key, id) => setC(prev => ({...prev, [key]: prev[key].filter(x=>x.id!==id)}));
+  const addPhotos = (key, files) => {
+    Array.from(files).forEach(f => shrinkImage(f, url =>
+      setC(prev => ({...prev, [key]:[...prev[key], url]}))));
+  };
+  const delPhoto = (key, i) => setC(prev => ({...prev, [key]: prev[key].filter((_,j)=>j!==i)}));
+  const miss = missingList({...c, status:"本契約"});
+  const save = () => {
+    let next = {...c};
+    if(next.use.date && !next.events.some(e => e.type==="本使用")){
+      next.events = [...next.events, { id:genId(), type:"本使用", date:next.use.date,
+        time:next.use.beautyStart || "", dur:4, staffIds:next.use.staffIds, note:"" }];
+    }
+    next.progress = {...next.progress, p2:"done"};
+    onSave(next);
+  };
+  return (
+    <div>
+      <div className="card">
+        <h2>{initial.id ? "カルテ編集" : "新規カルテ"}</h2>
+        <div className="section-note">💡 途中保存OK。<b>赤い「必須」項目</b>が空のままだと、一覧に「⚠未入力」の警告が表示されます。</div>
+        <h3>受付情報</h3>
+        <div className="grid2">
+          <div className="field"><label>紹介元</label>
+            <input value={c.referral} placeholder="例）式場様・ご友人・Instagram"
+              onChange={e=>setTop("referral", e.target.value)}/></div>
+          <div className="field"><label>入力者</label>
+            <select value={c.enteredBy} onChange={e=>setTop("enteredBy", e.target.value)}>
+              <option value="">選択してください</option>
+              {masters.staff.map(s=><option key={s.id} value={s.name}>{s.name}</option>)}
+            </select></div>
+        </div>
+        <PersonForm title="新郎" p={c.groom} set={setP("groom")} />
+        <PersonForm title="新婦" p={c.bride} set={setP("bride")} />
+        <h3>使用内容</h3>
+        <div className="grid2">
+          <div className="field"><label className="req">本使用日</label>
+            <input type="date" value={c.use.date} onChange={e=>setUse("date", e.target.value)}/></div>
+          <div className="field"><label className="req">使用場所</label>
+            <select value={c.use.venue} onChange={e=>setUse("venue", e.target.value)}>
+              <option value="">選択してください</option>
+              {masters.venues.map(v=><option key={v} value={v}>{v}</option>)}
+            </select></div>
+          <div className="field"><label className="req">美容開始時間</label>
+            <input type="time" value={c.use.beautyStart} onChange={e=>setUse("beautyStart", e.target.value)}/></div>
+          <div className="field"><label className="req">スタート時間</label>
+            <input type="time" value={c.use.start} onChange={e=>setUse("start", e.target.value)}/></div>
+          <div className="field"><label className="req">挙式スタイル</label>
+            <select value={c.use.style} onChange={e=>setUse("style", e.target.value)}>
+              <option value="">選択してください</option>
+              {masters.styles.map(v=><option key={v} value={v}>{v}</option>)}
+            </select></div>
+          <div className="field"><label className="req">スタッフ担当（複数OK）</label>
+            <div className="row" style={{gap:6}}>
+              {masters.staff.map(s => (
+                <button key={s.id} type="button"
+                  className={"btn btn-sm "+((c.use.staffIds||[]).includes(s.id)?"btn-main":"btn-ghost")}
+                  onClick={()=>toggleStaff(s.id)}>{s.name.split(" ")[0]}</button>
+              ))}
+            </div></div>
+        </div>
+        <h3>衣裳・お色直しの流れ</h3>
+        <div className="section-note">👗 上から順番＝当日の流れになります。お色直しが複数ある場合は行を追加してください。</div>
+        {c.costumes.map(w => (
+          <div key={w.id} className="row" style={{alignItems:"flex-end", marginBottom:8, gap:6}}>
+            <div style={{width:90}}><label>対象</label>
+              <select value={w.who} onChange={e=>setRow("costumes", w.id, {who:e.target.value})}>
+                <option>新婦</option><option>新郎</option></select></div>
+            <div style={{width:130}}><label>場面</label>
+              <input value={w.label} placeholder="挙式／お色直し1" onChange={e=>setRow("costumes", w.id, {label:e.target.value})}/></div>
+            <div style={{flex:1, minWidth:150}}><label>衣裳</label>
+              <input value={w.costume} placeholder="例）カラードレス（水色）" onChange={e=>setRow("costumes", w.id, {costume:e.target.value})}/></div>
+            <div style={{width:105}}><label>お召し替え時間</label>
+              <input type="time" value={w.time} onChange={e=>setRow("costumes", w.id, {time:e.target.value})}/></div>
+            <div style={{flex:1, minWidth:120}}><label>メモ</label>
+              <input value={w.note} onChange={e=>setRow("costumes", w.id, {note:e.target.value})}/></div>
+            <button className="btn btn-ghost btn-sm" onClick={()=>delRow("costumes", w.id)}>削除</button>
+          </div>
+        ))}
+        <button className="btn btn-sub btn-sm" onClick={()=>addRow("costumes",
+          { id:genId(), who:"新婦", label:"", costume:"", time:"", note:"" })}>＋ 衣裳を追加</button>
+        <h3>今後のスケジュール（メイクリハ・前撮りなど）</h3>
+        <div className="section-note">ここに入れた予定はカレンダーとタイム表に自動で反映されます📅 担当スタッフの割り振りはタイム表からもできます。</div>
+        {c.events.map(e => (
+          <div key={e.id} className="row" style={{alignItems:"flex-end", marginBottom:8, gap:6}}>
+            <div style={{width:130}}><label>種類</label>
+              <select value={e.type} onChange={ev=>setRow("events", e.id, {type:ev.target.value})}>
+                {masters.eventTypes.map(t=><option key={t} value={t}>{t}</option>)}
+              </select></div>
+            <div style={{width:150}}><label>日付</label>
+              <input type="date" value={e.date} onChange={ev=>setRow("events", e.id, {date:ev.target.value})}/></div>
+            <div style={{width:110}}><label>開始</label>
+              <input type="time" value={e.time} onChange={ev=>setRow("events", e.id, {time:ev.target.value})}/></div>
+            <div style={{flex:1, minWidth:140}}><label>メモ</label>
+              <input value={e.note} onChange={ev=>setRow("events", e.id, {note:ev.target.value})}/></div>
+            <button className="btn btn-ghost btn-sm" onClick={()=>delRow("events", e.id)}>削除</button>
+          </div>
+        ))}
+        <button className="btn btn-sub btn-sm" onClick={()=>addRow("events",
+          { id:genId(), type:"メイクリハ", date:"", time:"", dur:2, staffIds:[], note:"" })}>＋ 予定を追加</button>
+        <h3>列席者の美容</h3>
+        {c.guests.length===0 && <div className="meta" style={{marginBottom:8}}>まだ登録がありません</div>}
+        {c.guests.map(g => (
+          <div key={g.id} className="card" style={{padding:10, marginBottom:8, background:"#FBF8F4"}}>
+            <div className="row" style={{gap:6}}>
+              <div style={{flex:1, minWidth:120}}><label>お名前</label>
+                <input value={g.name} onChange={e=>setRow("guests", g.id, {name:e.target.value})}/></div>
+              <div style={{width:90}}><label>性別</label>
+                <select value={g.sex} onChange={e=>setRow("guests", g.id, {sex:e.target.value})}>
+                  <option>女性</option><option>男性</option></select></div>
+              <div style={{width:80}}><label>年齢</label>
+                <input value={g.age} onChange={e=>setRow("guests", g.id, {age:e.target.value})}/></div>
+              <div style={{width:150}}><label>着付け</label>
+                <select value={g.kitsuke} onChange={e=>setRow("guests", g.id, {kitsuke:e.target.value})}>
+                  {["なし","留袖","訪問着","振袖","紋付袴"].map(k=><option key={k}>{k}</option>)}
+                </select></div>
+            </div>
+            <div className="row" style={{alignItems:"center", marginTop:8, gap:14}}>
+              <label style={{display:"flex", alignItems:"center", gap:5, margin:0, fontSize:13.5, color:"var(--ink)"}}>
+                <input type="checkbox" style={{width:18, height:18}} checked={g.hair}
+                  onChange={e=>setRow("guests", g.id, {hair:e.target.checked})}/>ヘアーセット</label>
+              <label style={{display:"flex", alignItems:"center", gap:5, margin:0, fontSize:13.5, color:"var(--ink)"}}>
+                <input type="checkbox" style={{width:18, height:18}} checked={g.makeup}
+                  onChange={e=>setRow("guests", g.id, {makeup:e.target.checked})}/>メイク</label>
+              <div style={{flex:1, minWidth:140}}><label style={{margin:0}}>備考</label>
+                <input value={g.note} onChange={e=>setRow("guests", g.id, {note:e.target.value})}/></div>
+              <button className="btn btn-ghost btn-sm" onClick={()=>delRow("guests", g.id)}>削除</button>
+            </div>
+          </div>
+        ))}
+        <button className="btn btn-sub btn-sm" onClick={()=>addRow("guests",
+          { id:genId(), name:"", sex:"女性", age:"", hair:false, makeup:false, kitsuke:"なし", note:"" })}>＋ 列席者を追加</button>
+        <h3>顧客写真（お客様ご本人の写真）</h3>
+        <div className="section-note">📷 ホーム画面の顧客一覧に丸いサムネイルで表示されます。自動で縮小保存されます。</div>
+        <input type="file" accept="image/*" multiple onChange={e=>{addPhotos("custPhotos", e.target.files); e.target.value="";}} style={{marginBottom:10}}/>
+        <PhotoGrid photos={c.custPhotos} onDelete={(i)=>delPhoto("custPhotos", i)}
+          onZoom={()=>setZoom({photos:c.custPhotos, title:"顧客写真"})}/>
+        <h3>参考写真（ヘアスタイル・イメージ）</h3>
+        <input type="file" accept="image/*" multiple onChange={e=>{addPhotos("refPhotos", e.target.files); e.target.value="";}} style={{marginBottom:10}}/>
+        <PhotoGrid photos={c.refPhotos} onDelete={(i)=>delPhoto("refPhotos", i)}
+          onZoom={()=>setZoom({photos:c.refPhotos, title:"参考写真"})}/>
+        {miss.length>0 && (
+          <div className="alert-strip" style={{marginTop:14}}>
+            ⚠ 重要項目があと <b>{miss.length}件</b>：{miss.join("／")}
+          </div>
+        )}
+        <div className="row" style={{marginTop:14}}>
+          <button className="btn btn-main" style={{flex:1}} onClick={save}>保存する</button>
+          <button className="btn btn-ghost" onClick={onCancel}>もどる</button>
+        </div>
+      </div>
+      {zoom && <Lightbox photos={zoom.photos} title={zoom.title} onClose={()=>setZoom(null)}/>}
+    </div>
+  );
+}
+
+/* ---------- 顧客詳細（カルテ閲覧） ---------- */
+function PersonView({ title, p }){
+  const rows = [["お名前",p.name],["連絡先",p.contact],["年齢",p.age],["身長",p.height],
+    ["体型",p.body],["お好み",p.taste],["お仕事",p.job],["髪型",p.hair],
+    ["衣装内容",p.costume],["美容・着付け場所",p.place],["備考",p.note]];
+  return (
+    <div>
+      <h3>{title}</h3>
+      {rows.map(([k,v]) => <div className="kv" key={k}><span className="k">{k}</span><Val v={v}/></div>)}
+    </div>
+  );
+}
+function CustomerDetail({ c, masters, onEdit, onOpenEst, onBack, onGoDate }){
+  const t = iso(TODAY);
+  const [zoom, setZoom] = useState(null);
+  const staffName = (id) => {
+    const s = [...masters.staff, ...masters.vendors].find(x=>x.id===id);
+    return s ? s.name : "?";
+  };
+  const miss = missingList(c);
+  return (
+    <div>
+      <button className="btn btn-ghost btn-sm" onClick={onBack} style={{marginBottom:10}}>‹ 一覧にもどる</button>
+      <div className="card">
+        <div className="row" style={{alignItems:"center"}}>
+          {c.custPhotos.length > 0 && <img className="thumb" src={c.custPhotos[0]} alt=""
+            onClick={()=>setZoom({photos:c.custPhotos, title:"顧客写真"})}/>}
+          <span className="cust-name">{c.bride.name || "（新婦名未入力）"}・{c.groom.name || "（新郎名未入力）"} <span className="meta">様</span></span>
+          <StatusBadge status={c.status}/>
+          <WarnBadge c={c}/>
+          <button className="btn btn-sub btn-sm" style={{marginLeft:"auto"}} onClick={onEdit}>✏ 編集</button>
+        </div>
+        {miss.length>0 && (
+          <div className="alert-strip" style={{marginTop:10}}>⚠ 未入力の重要項目：{miss.join("／")}</div>
+        )}
+        <h3>受付情報</h3>
+        <div className="kv"><span className="k">紹介元</span><Val v={c.referral}/></div>
+        <div className="kv"><span className="k">入力者</span><Val v={c.enteredBy}/></div>
+        <h3>進捗（①見積 → ⑦請求書）</h3>
+        <div className="row" style={{gap:6, flexWrap:"wrap"}}>
+          {STEPS.map((s,i)=>{
+            const st = c.progress["p"+(i+1)];
+            return <span key={i} className={"badge "+(st==="done"?"b-ok":st==="na"?"b-gray":"b-warn")}>
+              {"①②③④⑤⑥⑦"[i]}{s}{st==="done"?" ✓":st==="na"?"（対象外）":" 未"}</span>;
+          })}
+        </div>
+        <h3>使用内容</h3>
+        <div className="kv"><span className="k">本使用日</span><Val v={jpLong(c.use.date)==="未定"?"":jpLong(c.use.date)}/></div>
+        <div className="kv"><span className="k">使用場所</span><Val v={c.use.venue}/></div>
+        <div className="kv"><span className="k">挙式スタイル</span><Val v={c.use.style}/></div>
+        <div className="kv"><span className="k">美容開始時間</span><Val v={c.use.beautyStart}/></div>
+        <div className="kv"><span className="k">スタート時間</span><Val v={c.use.start}/></div>
+        <div className="kv"><span className="k">スタッフ担当</span>
+          {(c.use.staffIds||[]).length>0
+            ? <span>{c.use.staffIds.map(staffName).join("、")}</span>
+            : <span className="empty-val">未割り当て</span>}
+        </div>
+        <h3>衣裳・お色直しの流れ</h3>
+        {c.costumes.length===0 ? <div className="meta">未登録（編集画面から追加できます）</div> : (
+          <div style={{overflowX:"auto"}}>
+            <table className="guest-table">
+              <thead><tr><th>順</th><th>対象</th><th>場面</th><th>衣裳</th><th>時間</th><th>メモ</th></tr></thead>
+              <tbody>
+                {c.costumes.map((w,i) => (
+                  <tr key={w.id}><td>{i+1}</td><td>{w.who}</td><td>{w.label}</td>
+                    <td>{w.costume}</td><td>{w.time}</td><td>{w.note}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <h3>スケジュール</h3>
+        {(c.events||[]).sort((a,b)=>a.date.localeCompare(b.date)).map(e => (
+          <div key={e.id} className="row" style={{alignItems:"center", borderTop:"1px solid #F1EBE4", padding:"6px 0", gap:8}}>
+            <span className={"chip "+(e.type==="本使用"?"ev-main":"")} style={{cursor:"pointer"}}
+              onClick={()=>onGoDate(e.date)}>{e.type}</span>
+            <b style={{fontSize:13.5}}>{jp(e.date)}</b>
+            <span className="meta">{e.time}</span>
+            <span className="meta" style={{flex:1}}>{e.note}</span>
+            {e.date < t && <span className="badge b-gray">済</span>}
+          </div>
+        ))}
+        <h3>列席者の美容（{c.guests.length}名）</h3>
+        {c.guests.length===0 ? <div className="meta">登録なし</div> : (
+          <div style={{overflowX:"auto"}}>
+            <table className="guest-table">
+              <thead><tr><th>お名前</th><th>性別</th><th>年齢</th><th>ヘア</th><th>メイク</th><th>着付け</th><th>備考</th></tr></thead>
+              <tbody>
+                {c.guests.map(g => (
+                  <tr key={g.id}><td>{g.name}</td><td>{g.sex}</td><td>{g.age}</td>
+                    <td>{g.hair?"○":"−"}</td><td>{g.makeup?"○":"−"}</td>
+                    <td>{g.kitsuke!=="なし"?g.kitsuke:"−"}</td><td>{g.note}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <h3>お見積書</h3>
+        {c.estimates.length===0
+          ? <div className="meta">まだ作成されていません {c.status==="本契約" && <span className="badge b-warn">⚠ 要作成</span>}</div>
+          : c.estimates.map(es => (
+            <div key={es.id} className="row" style={{alignItems:"center", gap:10, padding:"4px 0"}}>
+              <span style={{fontSize:13}}>{es.no}</span>
+              <span className="meta">{jp(es.date)}</span>
+              <span><b>{yen(estTotals(es).net)}</b></span>
+              <button className="btn btn-sub btn-sm" onClick={()=>onOpenEst(c.id)}>開く</button>
+            </div>
+          ))}
+        {c.invoices.length > 0 && (
+          <div>
+            <h3>請求書</h3>
+            {c.invoices.map(inv => (
+              <div key={inv.id} className="row" style={{alignItems:"center", gap:10, padding:"4px 0"}}>
+                <span style={{fontSize:13}}>{inv.no}</span>
+                <span className="meta">{jp(inv.date)}</span>
+                <span><b>{yen(estTotals(inv).net)}</b></span>
+                <span className="badge b-ok">発行済み</span>
+              </div>
+            ))}
+          </div>
+        )}
+        <h3>顧客写真</h3>
+        <PhotoGrid photos={c.custPhotos} onZoom={()=>setZoom({photos:c.custPhotos, title:"顧客写真"})}/>
+        <h3>参考写真</h3>
+        <PhotoGrid photos={c.refPhotos} onZoom={()=>setZoom({photos:c.refPhotos, title:"参考写真"})}/>
+        {c.note && (<div><h3>メモ</h3><div style={{fontSize:13.5}}>{c.note}</div></div>)}
+      </div>
+      {zoom && <Lightbox photos={zoom.photos} title={zoom.title} onClose={()=>setZoom(null)}/>}
+    </div>
+  );
+}
+
+/* ---------- 見積書 ---------- */
+function EstimateView({ c, user, onBack, onUpdate }){
+  const est = c.estimates[0];
+  const [edit, setEdit] = useState(false);
+  const [items, setItems] = useState(est ? est.items : []);
+  if(!est) return (
+    <div><button className="btn btn-ghost btn-sm" onClick={onBack}>‹ もどる</button>
+      <div className="card"><h2>お見積書</h2><div className="meta">このお客様の見積書はまだありません。</div></div></div>
+  );
+  const tot = estTotals({ items });
+  const setItem = (i, patch) => setItems(prev => prev.map((it,j)=> j===i ? {...it,...patch} : it));
+  const saveEdit = () => {
+    const newEst = {...est, items,
+      history:[...est.history, { date:iso(TODAY), by:user.name, memo:"明細を修正（"+VERSION+" デモ）" }]};
+    onUpdate({...c, estimates:[newEst, ...c.estimates.slice(1)]});
+    setEdit(false);
+  };
+  return (
+    <div>
+      <button className="btn btn-ghost btn-sm" onClick={onBack} style={{marginBottom:10}}>‹ もどる</button>
+      <div className="card">
+        <div className="row" style={{alignItems:"center"}}>
+          <h2 style={{margin:0}}>お見積書</h2>
+          <span className="meta">{est.no}</span>
+          {!edit
+            ? <button className="btn btn-sub btn-sm" style={{marginLeft:"auto"}} onClick={()=>setEdit(true)}>✏ 修正する</button>
+            : <button className="btn btn-main btn-sm" style={{marginLeft:"auto"}} onClick={saveEdit}>保存</button>}
+        </div>
+        <div className="meta" style={{margin:"4px 0 12px"}}>
+          {c.bride.name}・{c.groom.name} 様　／　作成日 {jp(est.date)}
+        </div>
+        <div style={{overflowX:"auto"}}>
+          <table className="est-table">
+            <thead><tr><th style={{textAlign:"left"}}>品目</th><th>数量</th><th>単価</th><th>値引き</th><th>金額</th></tr></thead>
+            <tbody>
+              {items.map((it,i) => (
+                <tr key={i}>
+                  <td>{edit ? <input value={it.name} onChange={e=>setItem(i,{name:e.target.value})}/> : it.name}</td>
+                  <td className="num" style={{width:60}}>{edit
+                    ? <input type="number" value={it.qty} onChange={e=>setItem(i,{qty:Number(e.target.value)||0})}/>
+                    : it.qty}</td>
+                  <td className="num" style={{width:110}}>{edit
+                    ? <input type="number" value={it.price} onChange={e=>setItem(i,{price:Number(e.target.value)||0})}/>
+                    : yen(it.price)}</td>
+                  <td className="num" style={{width:110, color:it.disc?"var(--red)":"inherit"}}>{edit
+                    ? <input type="number" value={it.disc} onChange={e=>setItem(i,{disc:Number(e.target.value)||0})}/>
+                    : (it.disc ? "▲"+yen(it.disc) : "−")}</td>
+                  <td className="num" style={{width:110}}>{yen(it.qty*it.price-(it.disc||0))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {edit && <button className="btn btn-sub btn-sm" style={{marginTop:8}}
+          onClick={()=>setItems([...items,{name:"",qty:1,price:0,disc:0}])}>＋ 行を追加</button>}
+        <div style={{textAlign:"right", marginTop:12, fontSize:14}}>
+          {tot.disc>0 && <div style={{color:"var(--red)"}}>値引き合計　▲{yen(tot.disc)}</div>}
+          <div style={{fontSize:18, fontWeight:700}}>合計（税込）　{yen(tot.net)}</div>
+        </div>
+        <h3>修正履歴</h3>
+        {est.history.map((h,i) => (
+          <div key={i} className="hist"><b>{jp(h.date)}</b>　{h.memo}　<span className="meta">（{h.by}）</span></div>
+        ))}
+        <div className="section-note" style={{marginTop:10}}>
+          💡 本番版では IER と同じく PDF出力・書類番号の自動採番・枝番コピーに対応予定です。
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- 見積書一覧・請求書一覧 ---------- */
+function EstListView({ customers, onOpenEst, onOpenCust }){
+  const rows = [];
+  customers.forEach(c => (c.estimates||[]).forEach(es => rows.push({ c, es })));
+  rows.sort((a,b)=>b.es.date.localeCompare(a.es.date));
+  return (
+    <div className="card">
+      <h2>📄 見積書一覧（{rows.length}件）</h2>
+      {rows.length===0 && <div className="meta">見積書はまだありません</div>}
+      <div style={{overflowX:"auto"}}>
+        {rows.length>0 && (
+        <table className="est-table">
+          <thead><tr><th style={{textAlign:"left"}}>番号</th><th>作成日</th><th style={{textAlign:"left"}}>お客様</th><th>金額</th><th>修正</th><th></th></tr></thead>
+          <tbody>
+            {rows.map(({c, es}) => (
+              <tr key={es.id}>
+                <td style={{fontSize:12.5}}>{es.no}</td>
+                <td style={{textAlign:"center"}}>{jp(es.date)}</td>
+                <td style={{cursor:"pointer", fontWeight:700}} onClick={()=>onOpenCust(c.id)}>{custName(c)} 様</td>
+                <td className="num">{yen(estTotals(es).net)}</td>
+                <td style={{textAlign:"center"}}>{es.history.length-1}回</td>
+                <td><button className="btn btn-sub btn-sm" onClick={()=>onOpenEst(c.id)}>開く</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>)}
+      </div>
+    </div>
+  );
+}
+function InvListView({ customers, onOpenCust }){
+  const t = iso(TODAY);
+  const [view, setView] = useState(null);
+  const rows = [];
+  customers.forEach(c => (c.invoices||[]).forEach(inv => rows.push({ c, inv })));
+  rows.sort((a,b)=>b.inv.date.localeCompare(a.inv.date));
+  const unbilled = customers.filter(c => c.status==="本契約" && c.use.date && c.use.date < t
+    && (!c.invoices || c.invoices.length===0));
+  return (
+    <div>
+      {unbilled.length > 0 && (
+        <div className="alert-strip">
+          <b>⚠ 施行が終わったのに請求書が未発行のお客様が {unbilled.length}組 います</b>
+          {unbilled.map(c => (
+            <div key={c.id} style={{cursor:"pointer"}} onClick={()=>onOpenCust(c.id)}>
+              ・{custName(c)} 様（本使用日 {jp(c.use.date)}）</div>
+          ))}
+        </div>
+      )}
+      <div className="card">
+        <h2>🧾 請求書一覧（{rows.length}件）</h2>
+        {rows.length===0 && <div className="meta">請求書はまだありません</div>}
+        <div style={{overflowX:"auto"}}>
+          {rows.length>0 && (
+          <table className="est-table">
+            <thead><tr><th style={{textAlign:"left"}}>番号</th><th>発行日</th><th style={{textAlign:"left"}}>お客様</th><th>金額</th><th></th></tr></thead>
+            <tbody>
+              {rows.map(({c, inv}) => (
+                <tr key={inv.id}>
+                  <td style={{fontSize:12.5}}>{inv.no}</td>
+                  <td style={{textAlign:"center"}}>{jp(inv.date)}</td>
+                  <td style={{cursor:"pointer", fontWeight:700}} onClick={()=>onOpenCust(c.id)}>{custName(c)} 様</td>
+                  <td className="num">{yen(estTotals(inv).net)}</td>
+                  <td><button className="btn btn-sub btn-sm" onClick={()=>setView({c, inv})}>開く</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>)}
+        </div>
+        <div className="section-note" style={{marginTop:10}}>
+          💡 請求書の様式（⑦）はクライアント様と相談しながら本実装します。今は発行済みの記録と「発行漏れチェック」ができます。
+        </div>
+      </div>
+      {view && (
+        <div className="modal-bg" onClick={()=>setView(null)}>
+          <div className="modal wide" onClick={e=>e.stopPropagation()}>
+            <h2 className="serif" style={{fontSize:17}}>請求書 {view.inv.no}</h2>
+            <div className="meta" style={{marginBottom:10}}>{custName(view.c)} 様／発行日 {jp(view.inv.date)}</div>
+            <table className="est-table">
+              <thead><tr><th style={{textAlign:"left"}}>品目</th><th>数量</th><th>単価</th><th>金額</th></tr></thead>
+              <tbody>
+                {view.inv.items.map((it,i)=>(
+                  <tr key={i}><td>{it.name}</td><td className="num">{it.qty}</td>
+                    <td className="num">{yen(it.price)}</td><td className="num">{yen(it.qty*it.price-(it.disc||0))}</td></tr>
+                ))}
+              </tbody>
+            </table>
+            <div style={{textAlign:"right", marginTop:10, fontSize:17, fontWeight:700}}>
+              合計（税込）　{yen(estTotals(view.inv).net)}</div>
+            <button className="btn btn-ghost" style={{width:"100%", marginTop:14}} onClick={()=>setView(null)}>閉じる</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------- マスター管理 ---------- */
+function MasterView({ masters, setMasters, onBackup, onRestore, onResetDemo, saveStatus }){
+  const [newName, setNewName] = useState({});
+  const fileRef = useRef(null);
+  const addTo = (key, obj) => {
+    setMasters(prev => ({...prev, [key]:[...prev[key], obj]}));
+    setNewName(prev => ({...prev, [key]:""}));
+  };
+  const delFrom = (key, idx) => setMasters(prev => ({...prev, [key]: prev[key].filter((_,i)=>i!==idx)}));
+  const colors = ["#B76E79","#5B7FA6","#4A7C59","#C8901F","#8B6FAE","#A05B4C"];
+  const listCard = (title, key, isObj) => (
+    <div className="card">
+      <h2>{title}</h2>
+      {masters[key].map((v,i) => (
+        <div key={i} className="row" style={{alignItems:"center", borderTop:"1px solid #F1EBE4", padding:"7px 0"}}>
+          {isObj && <span className="avatar" style={{background:v.color}}>{v.name[0]}</span>}
+          <span style={{flex:1, fontSize:14}}>{isObj ? v.name : v}
+            {isObj && v.role==="master" && <span className="badge b-hon" style={{marginLeft:8}}>👑 マスター</span>}</span>
+          <button className="btn btn-ghost btn-sm" onClick={()=>delFrom(key,i)}>削除</button>
+        </div>
+      ))}
+      <div className="row" style={{marginTop:10}}>
+        <input style={{flex:1}} placeholder="新しく追加" value={newName[key]||""}
+          onChange={e=>setNewName(prev=>({...prev,[key]:e.target.value}))}/>
+        <button className="btn btn-main btn-sm" onClick={()=>{
+          const nm = (newName[key]||"").trim(); if(!nm) return;
+          if(isObj) addTo(key, { id:genId(), name:nm, role:"staff", color:colors[masters[key].length%colors.length] });
+          else addTo(key, nm);
+        }}>追加</button>
+      </div>
+    </div>
+  );
+  return (
+    <div>
+      <div className="section-note">👑 この画面は<b>マスター（オーナー）専用</b>です。ここで登録した内容がカルテやタイム表の選択肢になります。</div>
+      <div className="card">
+        <h2>💾 データ管理</h2>
+        <div className="meta" style={{marginBottom:10}}>
+          入力したデータはこの端末に自動保存されています（状態：{saveStatus==="ok" ? "✅ 正常" : "⚠ 容量オーバーの可能性（写真を減らしてください）"}）。<br/>
+          念のため、定期的に「バックアップを保存」でファイルにも残してください。別の端末に移すときは、そのファイルを「バックアップから復元」で読み込みます。
+        </div>
+        <div className="row">
+          <button className="btn btn-main btn-sm" onClick={onBackup}>⬇ バックアップを保存</button>
+          <button className="btn btn-sub btn-sm" onClick={()=>fileRef.current && fileRef.current.click()}>⬆ バックアップから復元</button>
+          <button className="btn btn-ghost btn-sm" onClick={onResetDemo}>🔄 デモデータに戻す</button>
+          <input type="file" accept=".json,application/json" ref={fileRef} style={{display:"none"}}
+            onChange={e=>{ if(e.target.files[0]) onRestore(e.target.files[0]); e.target.value=""; }}/>
+        </div>
+        <div className="section-note" style={{marginTop:10}}>
+          💡 本番版ではクラウド（Firebase）保存になり、全端末で自動共有・自動バックアップされます。
+        </div>
+      </div>
+      {listCard("スタッフ", "staff", true)}
+      {listCard("外注先", "vendors", true)}
+      {listCard("使用場所", "venues", false)}
+      {listCard("挙式スタイル", "styles", false)}
+      <div className="card">
+        <h2>従業員アカウント</h2>
+        <div className="meta" style={{marginBottom:8}}>アカウントの発行・パスワード再設定はマスターだけが行えます（本番版で実装）</div>
+        {masters.staff.map(s => (
+          <div key={s.id} className="row" style={{alignItems:"center", borderTop:"1px solid #F1EBE4", padding:"7px 0"}}>
+            <span className="avatar" style={{background:s.color}}>{s.name[0]}</span>
+            <span style={{flex:1, fontSize:14}}>{s.name}</span>
+            <span className={"badge "+(s.role==="master"?"b-hon":"b-gray")}>{s.role==="master"?"マスター":"従業員"}</span>
+            <button className="btn btn-ghost btn-sm" disabled title="本番版で実装" style={{opacity:.45}}>パスワード再設定</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- 仮予約モーダル ---------- */
+function ProvisionalModal({ masters, onSave, onClose }){
+  const [name, setName] = useState("");
+  const [date, setDate] = useState("");
+  const [memo, setMemo] = useState("");
+  const [staff, setStaff] = useState("");
+  const [err, setErr] = useState("");
+  const submit = () => {
+    if(!name.trim() || !date){ setErr("お名前と日付は入れてください"); return; }
+    onSave({ name:name.trim(), date, memo, staff });
+  };
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e=>e.stopPropagation()}>
+        <h2 className="serif" style={{fontSize:17, marginBottom:4}}>仮予約を入れる</h2>
+        <div className="meta" style={{marginBottom:12}}>従業員のどなたでも登録できます。カレンダーには黄色（仮予約）で表示されます。</div>
+        <div className="field"><label className="req">お客様のお名前</label>
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="例）中村 様"/></div>
+        <div className="field"><label className="req">ご希望日</label>
+          <input type="date" value={date} onChange={e=>setDate(e.target.value)}/></div>
+        <div className="field"><label>受付スタッフ</label>
+          <select value={staff} onChange={e=>setStaff(e.target.value)}>
+            <option value="">選択してください</option>
+            {masters.staff.map(s=><option key={s.id} value={s.name}>{s.name}</option>)}
+          </select></div>
+        <div className="field"><label>メモ</label>
+          <textarea rows="2" value={memo} onChange={e=>setMemo(e.target.value)} placeholder="ご紹介元、ご希望など"/></div>
+        {err && <div style={{color:"var(--red)", fontSize:12.5, marginBottom:8}}>{err}</div>}
+        <div className="row">
+          <button className="btn btn-main" style={{flex:1}} onClick={submit}>登録する</button>
+          <button className="btn btn-ghost" onClick={onClose}>やめる</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- アプリ本体 ---------- */
+function App(){
+  const saved = React.useMemo(loadSaved, []);
+  const [user, setUser] = useState(null);
+  const [tab, setTab] = useState("home");
+  const [detailId, setDetailId] = useState(null);
+  const [estId, setEstId] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [schedDate, setSchedDate] = useState(iso(TODAY));
+  const [showProv, setShowProv] = useState(false);
+  const [customers, setCustomers] = useState(saved ? saved.customers : initialCustomers);
+  const [masters, setMasters] = useState(saved ? saved.masters : initialMasters);
+  const [vacations, setVacations] = useState(saved ? saved.vacations : initialVacations);
+  const [saveStatus, setSaveStatus] = useState("ok");
+  const isMaster = user && user.role === "master";
+
+  useEffect(() => {
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify({ customers, masters, vacations, ver:VERSION }));
+      setSaveStatus("ok");
+    }catch(e){ console.warn("自動保存に失敗:", e); setSaveStatus("error"); }
+  }, [customers, masters, vacations]);
+
+  if(!user) return <LoginScreen masters={masters} onLogin={setUser} />;
+
+  const openCustomer = (id) => { setDetailId(id); setEstId(null); setEditing(null); setEditingEvent(null); setTab("home"); window.scrollTo(0,0); };
+  const openEst = (id) => { setEstId(id); setDetailId(null); setEditing(null); setTab("home"); window.scrollTo(0,0); };
+  const goDate = (d) => { setSchedDate(d); setDetailId(null); setEstId(null); setTab("sched"); window.scrollTo(0,0); };
+  const saveCustomer = (c) => {
+    if(c.id){ setCustomers(prev => prev.map(x => x.id===c.id ? c : x)); setDetailId(c.id); }
+    else { const nc = {...c, id:genId()}; setCustomers(prev => [...prev, nc]); setDetailId(nc.id); }
+    setEditing(null); setTab("home"); window.scrollTo(0,0);
+  };
+  const saveEvent = (custId, eventId, patch) => {
+    setCustomers(prev => prev.map(c => c.id!==custId ? c :
+      {...c, events: c.events.map(e => e.id===eventId ? {...e, ...patch} : e)}));
+    setEditingEvent(null);
+    if(patch.date) setSchedDate(patch.date);
+  };
+  const saveProv = ({name, date, memo, staff}) => {
+    const nc = {...blankCustomer(), id:genId(), status:"仮予約", enteredBy:staff || user.name,
+      bride:{...blankPerson(), name},
+      use:{...blankCustomer().use, date},
+      events:[{ id:genId(), type:"その他", date, time:"", dur:2, staffIds:[], note:"仮予約" }],
+      note: memo};
+    setCustomers(prev => [...prev, nc]);
+    setShowProv(false); setTab("cal");
+  };
+  const doBackup = () => {
+    const data = JSON.stringify({ customers, masters, vacations, ver:VERSION,
+      exportedAt: new Date().toLocaleString("ja-JP") }, null, 2);
+    const blob = new Blob([data], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "美容タスク管理_バックアップ_" + iso(new Date()).replace(/-/g,"") + ".json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  const doRestore = (file) => {
+    const fr = new FileReader();
+    fr.onload = (ev) => {
+      try{
+        const j = JSON.parse(ev.target.result);
+        if(!j || !Array.isArray(j.customers)) throw new Error("形式が違います");
+        if(!window.confirm("バックアップファイルの内容で置き換えます。今のデータは上書きされます。よろしいですか？")) return;
+        setCustomers(j.customers.map(normalizeCustomer));
+        if(j.masters && j.masters.staff) setMasters(j.masters);
+        setVacations(Array.isArray(j.vacations) ? j.vacations : []);
+        alert("復元しました ✅");
+      }catch(e){ alert("復元できませんでした。バックアップファイル（.json）か確認してください。"); }
+    };
+    fr.readAsText(file);
+  };
+  const doResetDemo = () => {
+    if(!window.confirm("入力したデータを消して、最初のデモデータに戻します。よろしいですか？")) return;
+    localStorage.removeItem(LS_KEY);
+    location.reload();
+  };
+
+  const NAVS = [
+    ["home","🏠","ホーム","ホーム"], ["cal","📅","カレンダー","カレンダー"],
+    ["sched","⏱","タイム表","タイム表"], ["new","📝","新規カルテ","カルテ"],
+    ["estlist","📄","見積書一覧","見積"], ["invlist","🧾","請求書一覧","請求"],
+  ];
+  if(isMaster) NAVS.push(["master","👑","マスター","マスター"]);
+  const changeTab = (t) => {
+    setTab(t); setDetailId(null); setEstId(null); setEditingEvent(null);
+    setEditing(t==="new" ? blankCustomer() : null);
+    window.scrollTo(0,0);
+  };
+
+  let body = null;
+  const detailC = detailId && customers.find(c=>c.id===detailId);
+  const estC = estId && customers.find(c=>c.id===estId);
+  if(editing){
+    body = <KarteForm masters={masters} initial={editing} user={user}
+      onSave={saveCustomer} onCancel={()=>{ setEditing(null); if(!editing.id) setTab("home"); }} />;
+  } else if(estC){
+    body = <EstimateView c={estC} user={user} onBack={()=>openCustomer(estC.id)}
+      onUpdate={(nc)=>setCustomers(prev=>prev.map(x=>x.id===nc.id?nc:x))} />;
+  } else if(detailC){
+    body = <CustomerDetail c={detailC} masters={masters}
+      onEdit={()=>setEditing(detailC)} onOpenEst={openEst}
+      onBack={()=>setDetailId(null)} onGoDate={goDate} />;
+  } else if(tab==="home"){
+    body = <HomeView customers={customers} masters={masters}
+      onOpen={openCustomer} onOpenEst={openEst} onGoDate={goDate} />;
+  } else if(tab==="cal"){
+    body = <CalendarView customers={customers} masters={masters}
+      vacations={vacations} setVacations={setVacations} onPickDate={goDate} />;
+  } else if(tab==="sched"){
+    body = <ScheduleView customers={customers} masters={masters} vacations={vacations}
+      date={schedDate} setDate={setSchedDate}
+      onOpenEdit={(c,e)=>setEditingEvent({custId:c.id, eventId:e.id})} />;
+  } else if(tab==="estlist"){
+    body = <EstListView customers={customers} onOpenEst={openEst} onOpenCust={openCustomer} />;
+  } else if(tab==="invlist"){
+    body = <InvListView customers={customers} onOpenCust={openCustomer} />;
+  } else if(tab==="master" && isMaster){
+    body = <MasterView masters={masters} setMasters={setMasters}
+      onBackup={doBackup} onRestore={doRestore} onResetDemo={doResetDemo} saveStatus={saveStatus} />;
+  }
+
+  const evC = editingEvent && customers.find(c=>c.id===editingEvent.custId);
+  const evE = evC && evC.events.find(e=>e.id===editingEvent.eventId);
+
+  return (
+    <div>
+      <header className="app-header">
+        <div>
+          <div className="app-title">Bridal Beauty タスク管理</div>
+          <div className="ver">{VERSION}（デモ版）　{saveStatus==="ok" ? "💾 自動保存ON" : "⚠ 保存容量オーバー"}</div>
+        </div>
+        <div className="userchip">
+          <span className="avatar" style={{background:user.color}}>{user.name[0]}</span>
+          <div>{user.name}<br/><b style={{color:isMaster?"var(--rose-dark)":"var(--sub)"}}>{isMaster?"👑 マスター":"従業員"}</b></div>
+          <button className="btn btn-ghost btn-sm" onClick={()=>setUser(null)}>ログアウト</button>
+        </div>
+      </header>
+      <nav className="nav-desktop">
+        {NAVS.map(([k,ico,label]) => (
+          <button key={k} className={tab===k && !detailId && !estId ? "on":""} onClick={()=>changeTab(k)}>{ico} {label}</button>
+        ))}
+      </nav>
+      <main className="main">{body}</main>
+      {!editing && <button className="fab" onClick={()=>setShowProv(true)}>＋ 仮予約</button>}
+      {showProv && <ProvisionalModal masters={masters} onSave={saveProv} onClose={()=>setShowProv(false)} />}
+      {evC && evE && <EventEditModal c={evC} e={evE} customers={customers} vacations={vacations}
+        masters={masters} onSave={saveEvent}
+        onOpenKarte={(id)=>{ setEditingEvent(null); openCustomer(id); }}
+        onClose={()=>setEditingEvent(null)} />}
+      <nav className="nav-mobile">
+        {NAVS.map(([k,ico,label,short]) => (
+          <button key={k} className={tab===k && !detailId && !estId ? "on":""} onClick={()=>changeTab(k)}>
+            <span className="ico">{ico}</span>{short}</button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
